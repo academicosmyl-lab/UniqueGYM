@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -15,8 +17,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       autoLoadEntities: true,
       synchronize: false, // usar schema.sql / migraciones
     }),
-    // Los módulos (auth, exercises, routines, body-composition, nutrition, analytics)
-    // los agrega el agente backend por fases.
+    AuthModule,
+    UsersModule,
+    // Próximos módulos por fases:
+    // ExercisesModule, RoutinesModule, WorkoutSessionsModule,
+    // BodyCompositionModule, NutritionModule, AttendanceModule
   ],
 })
 export class AppModule {}
