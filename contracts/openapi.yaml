@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Unique Gym API
-  version: 0.1.0
+  version: 0.2.0
   description: >
     Contrato de la API (fuente de verdad Backend ↔ Frontend). Sin pagos. Sin IA.
     El agente backend lo mantiene actualizado a medida que implementa cada módulo.
@@ -12,6 +12,7 @@ tags:
   - name: auth
   - name: ejercicios
   - name: rutinas
+  - name: sesiones
   - name: composicion
   - name: nutricion
   - name: analitica
@@ -67,6 +68,141 @@ paths:
       responses:
         '200': { description: OK }
 
+  /workout-sessions:
+    post:
+      tags: [sesiones]
+      summary: Inicia una nueva sesion de entrenamiento
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateSessionInput' }
+      responses:
+        '201':
+          description: Sesion creada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { $ref: '#/components/schemas/WorkoutSession' }
+        '401': { description: No autenticado }
+        '403': { description: Rol no autorizado }
+        '404': { description: routine_day_id no existe }
+    get:
+      tags: [sesiones]
+      summary: Historial de sesiones del cliente autenticado
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: query
+          name: desde
+          schema: { type: string, format: date-time }
+        - in: query
+          name: hasta
+          schema: { type: string, format: date-time }
+        - in: query
+          name: completada
+          schema: { type: boolean }
+        - in: query
+          name: page
+          schema: { type: integer, default: 1, minimum: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 20, minimum: 1 }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/WorkoutSession' }
+                  total: { type: integer }
+                  page: { type: integer }
+                  limit: { type: integer }
+
+  /workout-sessions/{id}:
+    get:
+      tags: [sesiones]
+      summary: Obtiene una sesion con todos sus set_logs
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { $ref: '#/components/schemas/WorkoutSessionDetail' }
+        '404': { description: Sesion no encontrada o no pertenece al cliente }
+
+  /workout-sessions/{id}/sets:
+    post:
+      tags: [sesiones]
+      summary: Registra una serie en la sesion activa
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LogSetInput' }
+      responses:
+        '201':
+          description: Serie registrada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { $ref: '#/components/schemas/WorkoutSetLog' }
+        '400': { description: Sesion ya completada }
+        '404': { description: Sesion no encontrada o no pertenece al cliente }
+
+  /workout-sessions/{id}/complete:
+    patch:
+      tags: [sesiones]
+      summary: Cierra la sesion y calcula volumen y duracion
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nota_cliente: { type: string }
+      responses:
+        '200':
+          description: Sesion completada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { $ref: '#/components/schemas/WorkoutSessionDetail' }
+        '400': { description: Sesion ya estaba completada }
+        '404': { description: Sesion no encontrada o no pertenece al cliente }
+
   /body-composition:
     post:
       tags: [composicion]
@@ -113,6 +249,77 @@ components:
         nombre: { type: string }
         video_url: { type: string }
         dificultad: { type: string, enum: [PRINCIPIANTE, INTERMEDIO, AVANZADO] }
+    CreateSessionInput:
+      type: object
+      properties:
+        routine_day_id:
+          type: string
+          format: uuid
+          nullable: true
+        fecha:
+          type: string
+          format: date-time
+          nullable: true
+        nota_cliente:
+          type: string
+          nullable: true
+
+    LogSetInput:
+      type: object
+      required: [exercise_id, numero_serie]
+      properties:
+        exercise_id: { type: string, format: uuid }
+        numero_serie: { type: integer, minimum: 1 }
+        peso: { type: number, nullable: true }
+        reps: { type: integer, minimum: 0, nullable: true }
+        rpe: { type: number, minimum: 1, maximum: 10, nullable: true }
+        completada: { type: boolean, default: true }
+
+    WorkoutSetLog:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        session_id: { type: string, format: uuid }
+        exercise_id: { type: string, format: uuid }
+        numero_serie: { type: integer }
+        peso: { type: number, nullable: true }
+        reps: { type: integer, nullable: true }
+        rpe: { type: number, nullable: true }
+        completada: { type: boolean }
+
+    WorkoutSetLogDetail:
+      allOf:
+        - { $ref: '#/components/schemas/WorkoutSetLog' }
+        - type: object
+          properties:
+            exercise:
+              type: object
+              properties:
+                id: { type: string, format: uuid }
+                nombre: { type: string }
+                video_url: { type: string, nullable: true }
+
+    WorkoutSession:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        cliente_id: { type: string, format: uuid }
+        routine_day_id: { type: string, format: uuid, nullable: true }
+        fecha: { type: string, format: date-time }
+        duracion_min: { type: integer, nullable: true }
+        volumen_total: { type: number, nullable: true }
+        completada: { type: boolean }
+        nota_cliente: { type: string, nullable: true }
+
+    WorkoutSessionDetail:
+      allOf:
+        - { $ref: '#/components/schemas/WorkoutSession' }
+        - type: object
+          properties:
+            set_logs:
+              type: array
+              items: { $ref: '#/components/schemas/WorkoutSetLogDetail' }
+
     BodyComposition:
       type: object
       properties:
