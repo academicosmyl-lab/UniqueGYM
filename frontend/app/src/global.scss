@@ -1,0 +1,102 @@
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ * Put style rules here that you want to apply globally. These styles are for
+ * the entire app and not just one component. Additionally, this file can be
+ * used as an entry point to import other CSS/Sass files to be included in the
+ * output CSS.
+ * For more information on global stylesheets, visit the documentation:
+ * https://ionicframework.com/docs/layout/global-stylesheets
+ */
+
+/* Core CSS required for Ionic components to work properly */
+@import "@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+@import "@ionic/angular/css/display.css";
+
+/* Optional CSS utils that can be commented out */
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/float-elements.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
+
+/**
+ * Ionic Dark Mode
+ * -----------------------------------------------------
+ * For more info, please see:
+ * https://ionicframework.com/docs/theming/dark-mode
+ */
+
+/* @import "@ionic/angular/css/palettes/dark.always.css"; */
+/* @import "@ionic/angular/css/palettes/dark.class.css"; */
+@import "@ionic/angular/css/palettes/dark.system.css";
+
+* { box-sizing: border-box; }
+
+.ug-display {
+  font-family: 'Saira Condensed', sans-serif;
+  font-style: italic;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+.ug-datos {
+  font-family: 'Saira', sans-serif;
+  font-weight: 700;
+}
+.ug-btn-primary {
+  --background: var(--ug-verde);
+  --color: var(--ug-negro);
+  --border-radius: var(--ug-radio-md);
+  --box-shadow: var(--ug-glow);
+  font-family: 'Saira Condensed', sans-serif;
+  font-style: italic;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.ug-btn-ghost {
+  --background: var(--ug-superficie-3);
+  --color: var(--ug-texto);
+  --border-radius: var(--ug-radio-md);
+  --border-width: 1px;
+  --border-style: solid;
+  --border-color: var(--ug-linea);
+}
+.ug-card {
+  background: var(--ug-superficie);
+  border: 1px solid var(--ug-linea);
+  border-radius: var(--ug-radio-lg);
+  padding: var(--ug-md);
+  box-shadow: var(--ug-sombra-tarjeta);
+}
+.ug-card-featured {
+  background: linear-gradient(135deg, rgba(29,222,16,0.08), rgba(29,222,16,0.03));
+  border: 1px solid rgba(29,222,16,0.25);
+  border-radius: var(--ug-radio-lg);
+  padding: var(--ug-md);
+}
+.ug-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--ug-radio-pill);
+  text-transform: uppercase;
+  &.saludable { background: rgba(29,222,16,0.15); color: var(--ug-verde); }
+  &.advertencia { background: rgba(224,161,63,0.15); color: var(--ug-ambar); }
+  &.fuera { background: rgba(224,101,63,0.15); color: var(--ug-error); }
+}
+.ug-chip {
+  border: 1px solid rgba(29,222,16,0.35);
+  color: var(--ug-verde);
+  border-radius: var(--ug-radio-pill);
+  padding: 2px 10px;
+  font-size: 12px;
+}
+ion-content { --background: var(--ug-negro); }
+ion-toolbar { --background: var(--ug-superficie); border-bottom: 1px solid var(--ug-linea); }
