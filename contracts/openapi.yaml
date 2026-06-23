@@ -1,0 +1,126 @@
+openapi: 3.0.3
+info:
+  title: Unique Gym API
+  version: 0.1.0
+  description: >
+    Contrato de la API (fuente de verdad Backend ↔ Frontend). Sin pagos. Sin IA.
+    El agente backend lo mantiene actualizado a medida que implementa cada módulo.
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Local (Fase 0–6, sin servicios de pago)
+tags:
+  - name: auth
+  - name: ejercicios
+  - name: rutinas
+  - name: composicion
+  - name: nutricion
+  - name: analitica
+paths:
+  /auth/login:
+    post:
+      tags: [auth]
+      summary: Inicia sesión y devuelve JWT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string, minLength: 6 }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token: { type: string }
+                  user:
+                    type: object
+                    properties:
+                      id: { type: string, format: uuid }
+                      nombres: { type: string }
+                      role: { type: string, enum: [ADMIN, ENTRENADOR, CLIENTE, RECEPCION] }
+        '401': { description: Credenciales inválidas }
+
+  /exercises:
+    get:
+      tags: [ejercicios]
+      summary: Lista el catálogo de ejercicios del gimnasio
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Exercise' } }
+
+  /routines/today:
+    get:
+      tags: [rutinas]
+      summary: Devuelve la rutina del día del cliente autenticado
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: OK }
+
+  /body-composition:
+    post:
+      tags: [composicion]
+      summary: Registra una medición de composición corporal (pesa BIA o manual)
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/BodyComposition' }
+      responses:
+        '201': { description: Creado }
+    get:
+      tags: [composicion]
+      summary: Historial de composición corporal del cliente
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: OK }
+
+  /nutrition/plan:
+    get:
+      tags: [nutricion]
+      summary: Plan nutricional activo del cliente (calorías, macros, menú)
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: OK }
+
+  /analytics/progress:
+    get:
+      tags: [analitica]
+      summary: Métricas robustas de progreso del cliente (tendencias, adherencia)
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: OK }
+
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+  schemas:
+    Exercise:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        nombre: { type: string }
+        video_url: { type: string }
+        dificultad: { type: string, enum: [PRINCIPIANTE, INTERMEDIO, AVANZADO] }
+    BodyComposition:
+      type: object
+      properties:
+        fuente: { type: string, enum: [PESA, MANUAL] }
+        peso_kg: { type: number }
+        grasa_pct: { type: number }
+        agua_pct: { type: number }
+        musculo_kg: { type: number }
+        grasa_visceral: { type: integer }
+        tmb_kcal: { type: integer }
+        edad_metabolica: { type: integer }
