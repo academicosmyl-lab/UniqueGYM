@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ExercisesModule } from './exercises/exercises.module';
+import { RoutinesModule } from './routines/routines.module';
 
 @Module({
   imports: [
@@ -21,9 +22,10 @@ import { ExercisesModule } from './exercises/exercises.module';
     AuthModule,
     UsersModule,
     ExercisesModule,
+    RoutinesModule,
     // Próximos módulos por fases:
-    // RoutinesModule, WorkoutSessionsModule,
-    // BodyCompositionModule, NutritionModule, AttendanceModule
+    // WorkoutSessionsModule, BodyCompositionModule,
+    // NutritionModule, AttendanceModule
   ],
 })
 export class AppModule {}
