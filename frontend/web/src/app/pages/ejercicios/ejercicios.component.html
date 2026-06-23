@@ -1,4 +1,203 @@
-<h2 class="ug-display" style="margin-bottom: var(--ug-lg)">EJERCICIOS</h2>
-<div class="ug-card" style="margin-top: var(--ug-xl)">
-  <h2 class="ug-display" style="color:var(--ug-apagado)">Proximamente...</h2>
+<div class="ejercicios-page">
+
+  <!-- Cabecera -->
+  <div class="page-header">
+    <h1 class="ug-display">EJERCICIOS</h1>
+    <button class="ug-btn-primary" (click)="openCreate()">+ NUEVO EJERCICIO</button>
+  </div>
+
+  <!-- Filtros -->
+  <div class="ug-card filtros-card">
+    <input
+      class="ug-input filtro-search"
+      type="text"
+      placeholder="Buscar ejercicio..."
+      [value]="filtros().search"
+      (input)="filtrar('search', $any($event.target).value)"
+    />
+
+    <select
+      class="ug-select"
+      [value]="filtros().muscle_id"
+      (change)="filtrar('muscle_id', $any($event.target).value)"
+    >
+      <option value="">Todos los músculos</option>
+      <option *ngFor="let m of musculos()" [value]="m.id">{{ m.nombre }}</option>
+    </select>
+
+    <select
+      class="ug-select"
+      [value]="filtros().dificultad"
+      (change)="filtrar('dificultad', $any($event.target).value)"
+    >
+      <option value="">Todas las dificultades</option>
+      <option value="PRINCIPIANTE">PRINCIPIANTE</option>
+      <option value="INTERMEDIO">INTERMEDIO</option>
+      <option value="AVANZADO">AVANZADO</option>
+    </select>
+
+    <span class="ug-text-apagado total-label">{{ total() }} ejercicios</span>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading()" class="ug-card" style="text-align:center; padding:var(--ug-2xl);">
+    <span class="ug-text-apagado">Cargando ejercicios...</span>
+  </div>
+
+  <!-- Estado vacío -->
+  <div *ngIf="!loading() && ejercicios().length === 0" class="ug-card estado-vacio">
+    <span class="vacio-icono">&#127947;</span>
+    <p class="ug-display vacio-titulo">SIN EJERCICIOS</p>
+    <p class="ug-text-apagado">No se encontraron ejercicios con los filtros aplicados.</p>
+  </div>
+
+  <!-- Tabla -->
+  <div *ngIf="!loading() && ejercicios().length > 0" class="ug-card tabla-card">
+    <table class="ug-table">
+      <thead>
+        <tr>
+          <th>Ejercicio</th>
+          <th>Equipo</th>
+          <th>Dificultad</th>
+          <th>Público</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let e of ejercicios()">
+          <td>
+            <div class="ejercicio-cell">
+              <img
+                *ngIf="e.thumbnail_url"
+                [src]="e.thumbnail_url"
+                [alt]="e.nombre"
+                class="thumbnail"
+              />
+              <span *ngIf="!e.thumbnail_url" class="thumbnail-placeholder">&#127947;</span>
+              <div class="ejercicio-info">
+                <strong>{{ e.nombre }}</strong>
+                <span *ngIf="e.descripcion" class="ug-text-apagado desc-truncada">
+                  {{ e.descripcion }}
+                </span>
+              </div>
+            </div>
+          </td>
+          <td>
+            <span *ngIf="e.equipment" class="ug-chip">{{ e.equipment.nombre }}</span>
+            <span *ngIf="!e.equipment" class="ug-text-apagado">—</span>
+          </td>
+          <td>
+            <span [class]="badgeDificultad(e.dificultad)">{{ e.dificultad }}</span>
+          </td>
+          <td>
+            <span *ngIf="e.es_publico" class="ug-badge-ok">SÍ</span>
+            <span *ngIf="!e.es_publico" class="ug-text-apagado" style="font-size:12px;">NO</span>
+          </td>
+          <td class="acciones-cell">
+            <button class="ug-btn-ghost ug-btn-sm" (click)="openEdit(e)">Editar</button>
+            <button class="ug-btn-danger ug-btn-sm" (click)="deleteEjercicio(e.id)">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Paginación -->
+  <div *ngIf="!loading() && ejercicios().length > 0" class="paginacion">
+    <button
+      class="ug-btn-ghost ug-btn-sm"
+      [disabled]="filtros().page === 1"
+      (click)="paginaAnterior()"
+    >&#8592; Anterior</button>
+
+    <span class="ug-text-apagado pag-info">
+      Página {{ filtros().page }} de {{ totalPaginas() }}
+    </span>
+
+    <button
+      class="ug-btn-ghost ug-btn-sm"
+      [disabled]="filtros().page >= totalPaginas()"
+      (click)="paginaSiguiente()"
+    >Siguiente &#8594;</button>
+  </div>
+
+</div>
+
+<!-- Modal crear/editar -->
+<div *ngIf="showModal()" class="modal-overlay" (click)="closeModal()">
+  <div class="modal-panel ug-card" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <h2 class="ug-display modal-titulo">{{ modalTitulo }}</h2>
+      <button class="ug-btn-ghost ug-btn-sm" (click)="closeModal()">&#10005;</button>
+    </div>
+
+    <div *ngIf="errorMsg()" class="error-msg">{{ errorMsg() }}</div>
+
+    <form class="modal-form" (ngSubmit)="saveEjercicio()">
+
+      <div class="campo">
+        <label class="campo-label">Nombre *</label>
+        <input class="ug-input" type="text" [(ngModel)]="form.nombre" name="nombre"
+               placeholder="Ej. Press de banca plano" required />
+      </div>
+
+      <div class="campo">
+        <label class="campo-label">Descripción</label>
+        <textarea class="ug-input" [(ngModel)]="form.descripcion" name="descripcion"
+                  rows="3" placeholder="Descripción breve del ejercicio"></textarea>
+      </div>
+
+      <div class="campo">
+        <label class="campo-label">Instrucciones</label>
+        <textarea class="ug-input" [(ngModel)]="form.instrucciones" name="instrucciones"
+                  rows="4" placeholder="Paso a paso para ejecutar el ejercicio correctamente"></textarea>
+      </div>
+
+      <div class="campo">
+        <label class="campo-label">URL de video</label>
+        <input class="ug-input" type="url" [(ngModel)]="form.video_url" name="video_url"
+               placeholder="https://youtube.com/watch?v=..." />
+      </div>
+
+      <div class="campo">
+        <label class="campo-label">URL de thumbnail</label>
+        <input class="ug-input" type="url" [(ngModel)]="form.thumbnail_url" name="thumbnail_url"
+               placeholder="https://..." />
+      </div>
+
+      <div class="campo">
+        <label class="campo-label">Equipo</label>
+        <select class="ug-select" [(ngModel)]="form.equipment_id" name="equipment_id">
+          <option value="">Sin equipo</option>
+          <option *ngFor="let eq of equipment()" [value]="eq.id">{{ eq.nombre }}</option>
+        </select>
+      </div>
+
+      <div class="campo">
+        <label class="campo-label">Dificultad</label>
+        <select class="ug-select" [(ngModel)]="form.dificultad" name="dificultad">
+          <option value="PRINCIPIANTE">PRINCIPIANTE</option>
+          <option value="INTERMEDIO">INTERMEDIO</option>
+          <option value="AVANZADO">AVANZADO</option>
+        </select>
+      </div>
+
+      <div class="campo campo-inline">
+        <label class="campo-label">¿Ejercicio público?</label>
+        <input type="checkbox" [(ngModel)]="form.es_publico" name="es_publico"
+               class="checkbox-verde" />
+      </div>
+
+      <p class="ug-text-apagado nota-modal">
+        Los grupos musculares se asignan desde la edición detallada del ejercicio
+      </p>
+
+      <div class="modal-footer">
+        <button type="button" class="ug-btn-ghost" (click)="closeModal()">CANCELAR</button>
+        <button type="submit" class="ug-btn-primary">GUARDAR</button>
+      </div>
+
+    </form>
+  </div>
 </div>

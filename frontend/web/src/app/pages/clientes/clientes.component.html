@@ -1,4 +1,155 @@
-<h2 class="ug-display" style="margin-bottom: var(--ug-lg)">CLIENTES</h2>
-<div class="ug-card" style="margin-top: var(--ug-xl)">
-  <h2 class="ug-display" style="color:var(--ug-apagado)">Proximamente...</h2>
+<div class="clientes-page">
+
+  <!-- Cabecera -->
+  <div class="page-header">
+    <h1 class="ug-display">CLIENTES</h1>
+    <div class="header-right">
+      <input
+        class="ug-input search-input"
+        type="text"
+        placeholder="Buscar por nombre o email..."
+        [ngModel]="search()"
+        (ngModelChange)="search.set($event)"
+      />
+      <span class="ug-badge-info total-badge">{{ filteredClientes().length }} clientes</span>
+    </div>
+  </div>
+
+  <!-- Layout principal -->
+  <div class="layout-principal" [class.con-panel]="showDetailPanel()">
+
+    <!-- Columna tabla -->
+    <div class="columna-tabla">
+
+      <!-- Loading -->
+      <div *ngIf="loading()" class="ug-card" style="text-align:center; padding:var(--ug-2xl);">
+        <span class="ug-text-apagado">Cargando clientes...</span>
+      </div>
+
+      <!-- Tabla -->
+      <div *ngIf="!loading()" class="ug-card tabla-card">
+        <table class="ug-table">
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Email</th>
+              <th>Objetivo</th>
+              <th>Estado</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let c of filteredClientes()"
+              [class.fila-seleccionada]="isSelected(c)"
+            >
+              <td>
+                <div class="cliente-cell">
+                  <div class="avatar">{{ iniciales(c) }}</div>
+                  <div class="cliente-info">
+                    <strong>{{ c.nombres }} {{ c.apellidos }}</strong>
+                  </div>
+                </div>
+              </td>
+              <td><span class="ug-text-apagado">{{ c.email }}</span></td>
+              <td>
+                <span [class]="badgeObjetivo(c.objetivo)">{{ labelObjetivo(c.objetivo) }}</span>
+              </td>
+              <td>
+                <span *ngIf="c.activo" class="ug-badge-ok">ACTIVO</span>
+                <span *ngIf="!c.activo" class="ug-badge-err">INACTIVO</span>
+              </td>
+              <td>
+                <button class="ug-btn-ghost ug-btn-sm" (click)="selectCliente(c)">Ver</button>
+              </td>
+            </tr>
+
+            <!-- Estado vacío -->
+            <tr *ngIf="filteredClientes().length === 0">
+              <td colspan="5" class="estado-vacio-inline">
+                <span class="ug-text-apagado">No se encontraron clientes</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+    <!-- Panel detalle -->
+    <div *ngIf="showDetailPanel() && selectedCliente() as cliente" class="panel-detalle ug-card">
+
+      <!-- Header panel -->
+      <div class="panel-header">
+        <h2 class="ug-display panel-nombre">{{ cliente.nombres }} {{ cliente.apellidos }}</h2>
+        <button class="ug-btn-ghost ug-btn-sm" (click)="closePanel()">&#10005;</button>
+      </div>
+
+      <!-- Info básica -->
+      <div class="panel-seccion">
+        <p class="seccion-titulo ug-text-apagado">INFORMACIÓN</p>
+        <div class="info-fila">
+          <span class="info-label ug-text-apagado">Email</span>
+          <span>{{ cliente.email }}</span>
+        </div>
+        <div class="info-fila">
+          <span class="info-label ug-text-apagado">Objetivo</span>
+          <span [class]="badgeObjetivo(cliente.objetivo)">{{ labelObjetivo(cliente.objetivo) }}</span>
+        </div>
+        <div class="info-fila">
+          <span class="info-label ug-text-apagado">Estado</span>
+          <span *ngIf="cliente.activo" class="ug-badge-ok">ACTIVO</span>
+          <span *ngIf="!cliente.activo" class="ug-badge-err">INACTIVO</span>
+        </div>
+      </div>
+
+      <!-- Asignar rutina -->
+      <div class="panel-seccion">
+        <p class="seccion-titulo ug-text-apagado">RUTINA ASIGNADA</p>
+
+        <select
+          class="ug-select"
+          [ngModel]="rutinaSeleccionada()"
+          (ngModelChange)="rutinaSeleccionada.set($event)"
+          style="margin-bottom: var(--ug-md);"
+        >
+          <option value="">Seleccionar plantilla de rutina...</option>
+          <option *ngFor="let r of rutinas()" [value]="r.id">
+            {{ r.nombre }} ({{ r.semanas }} sem.)
+          </option>
+        </select>
+
+        <div *ngIf="rutinas().length === 0" class="ug-text-apagado" style="font-size:12px; margin-bottom:var(--ug-md);">
+          No hay plantillas disponibles aún
+        </div>
+
+        <button
+          class="ug-btn-primary w-full"
+          (click)="asignarRutina(cliente.id, rutinaSeleccionada())"
+        >
+          ASIGNAR RUTINA
+        </button>
+      </div>
+
+      <!-- Acciones rápidas -->
+      <div class="panel-seccion">
+        <p class="seccion-titulo ug-text-apagado">ACCIONES RÁPIDAS</p>
+        <div class="acciones-stack">
+          <button class="ug-btn-ghost w-full" disabled>
+            Ver composición corporal
+          </button>
+          <button class="ug-btn-ghost w-full" disabled>
+            Ver plan nutricional
+          </button>
+        </div>
+      </div>
+
+      <p class="ug-text-apagado nota-panel">
+        La gestión completa de clientes se completa en Fase 3 y 4
+      </p>
+
+    </div>
+
+  </div>
+
 </div>

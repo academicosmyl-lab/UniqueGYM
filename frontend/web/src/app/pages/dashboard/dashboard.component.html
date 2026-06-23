@@ -1,4 +1,92 @@
-<h2 class="ug-display" style="margin-bottom: var(--ug-lg)">DASHBOARD</h2>
-<div class="ug-card" style="margin-top: var(--ug-xl)">
-  <h2 class="ug-display" style="color:var(--ug-apagado)">Proximamente...</h2>
+<div class="dashboard-page">
+
+  <!-- Cabecera -->
+  <div class="page-header">
+    <h1 class="ug-display">DASHBOARD</h1>
+    <p class="ug-text-apagado fecha-actual">{{ fechaActual }}</p>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-grid">
+
+    <div class="ug-card kpi-card">
+      <span class="kpi-label ug-text-apagado">CLIENTES ACTIVOS</span>
+      <span class="kpi-valor ug-datos ug-text-verde">{{ stats().clientes_activos }}</span>
+    </div>
+
+    <div class="ug-card kpi-card">
+      <span class="kpi-label ug-text-apagado">SESIONES HOY</span>
+      <span class="kpi-valor ug-datos ug-text-verde">{{ stats().sesiones_hoy }}</span>
+    </div>
+
+    <div class="ug-card kpi-card">
+      <span class="kpi-label ug-text-apagado">ADHERENCIA PROM.</span>
+      <span class="kpi-valor ug-datos ug-text-verde">{{ stats().adherencia }}</span>
+    </div>
+
+    <div class="ug-card kpi-card">
+      <span class="kpi-label ug-text-apagado">ALERTAS</span>
+      <span
+        *ngIf="stats().alertas > 0"
+        class="kpi-valor ug-badge-err"
+        style="font-size:24px; padding: 4px 16px;"
+      >{{ stats().alertas }}</span>
+      <span
+        *ngIf="stats().alertas === 0"
+        class="ug-badge-ok"
+        style="margin-top: var(--ug-sm); font-size:12px;"
+      >OK</span>
+    </div>
+
+  </div>
+
+  <!-- Actividad reciente -->
+  <div class="ug-card seccion-card">
+    <h2 class="ug-display seccion-titulo">ACTIVIDAD RECIENTE</h2>
+
+    <table class="ug-table">
+      <thead>
+        <tr>
+          <th>Cliente</th>
+          <th>Módulo</th>
+          <th>Fecha</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Skeleton rows -->
+        <tr *ngFor="let i of [1,2,3]">
+          <td><div class="skeleton-cell"></div></td>
+          <td><div class="skeleton-cell" style="width:70%"></div></td>
+          <td><div class="skeleton-cell" style="width:60%"></div></td>
+          <td><div class="skeleton-cell" style="width:50%"></div></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="ug-text-apagado nota-fase" style="margin-top:var(--ug-lg); font-size:12px;">
+      Los datos reales se cargarán en Fase 5 (estadística)
+    </p>
+  </div>
+
+  <!-- Accesos rápidos -->
+  <div class="accesos-grid">
+
+    <a routerLink="/clientes" class="ug-card acceso-card">
+      <span class="acceso-icono">&#128101;</span>
+      <span class="ug-display acceso-label">VER CLIENTES</span>
+    </a>
+
+    <a routerLink="/rutinas" class="ug-card acceso-card">
+      <span class="acceso-icono">&#128170;</span>
+      <span class="ug-display acceso-label">GESTIONAR RUTINAS</span>
+    </a>
+
+    <a routerLink="/ejercicios" class="ug-card acceso-card">
+      <span class="acceso-icono">&#127947;</span>
+      <span class="ug-display acceso-label">CATÁLOGO EJERCICIOS</span>
+    </a>
+
+  </div>
+
 </div>
