@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { ExercisesModule } from './exercises/exercises.module';
 
 @Module({
   imports: [
@@ -19,8 +20,9 @@ import { UsersModule } from './users/users.module';
     }),
     AuthModule,
     UsersModule,
+    ExercisesModule,
     // Próximos módulos por fases:
-    // ExercisesModule, RoutinesModule, WorkoutSessionsModule,
+    // RoutinesModule, WorkoutSessionsModule,
     // BodyCompositionModule, NutritionModule, AttendanceModule
   ],
 })
