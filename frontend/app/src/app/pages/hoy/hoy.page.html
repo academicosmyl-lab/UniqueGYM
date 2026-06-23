@@ -1,8 +1,125 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title class="ug-display">HOY</ion-title>
+    <ion-title>
+      <span class="ug-display titulo-hoy">HOY</span>
+      <span class="subtitulo-dia">{{ diaTexto() }}</span>
+    </ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content class="ion-padding">
-  <p style="color: var(--ug-apagado)">Próximamente...</p>
+
+<ion-content>
+
+  <!-- Estado de error de red -->
+  <div class="estado-error" *ngIf="errorMsg() && !loading()">
+    <ion-icon name="cloud-offline-outline"></ion-icon>
+    <p>{{ errorMsg() }}</p>
+    <ion-button fill="clear" class="ug-btn-ghost btn-reintentar" (click)="cargarRutina()">
+      Reintentar
+    </ion-button>
+  </div>
+
+  <!-- Estado de carga: skeleton -->
+  <div class="contenido-padding" *ngIf="loading()">
+    <div class="ug-card skeleton-card">
+      <ion-skeleton-text animated style="width: 60%; height: 24px; border-radius: 6px;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width: 40%; height: 16px; margin-top: 8px; border-radius: 6px;"></ion-skeleton-text>
+    </div>
+    <div class="skeleton-lista">
+      <div class="ug-card skeleton-item" *ngFor="let i of [1,2,3,4]">
+        <div class="skeleton-row">
+          <ion-skeleton-text animated style="width: 48px; height: 48px; border-radius: 8px; flex-shrink: 0;"></ion-skeleton-text>
+          <div class="skeleton-texto">
+            <ion-skeleton-text animated style="width: 70%; height: 16px; border-radius: 4px;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 45%; height: 12px; margin-top: 6px; border-radius: 4px;"></ion-skeleton-text>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estado vacío: sin rutina hoy -->
+  <div class="estado-vacio" *ngIf="!loading() && !routineDay() && !errorMsg()">
+    <ion-icon name="barbell-outline" class="icono-vacio"></ion-icon>
+    <h2 class="ug-display texto-vacio">Sin rutina para hoy</h2>
+    <p class="subtexto-vacio">Descansa o consulta a tu entrenador</p>
+  </div>
+
+  <!-- Estado con rutina -->
+  <div class="contenido-padding" *ngIf="!loading() && routineDay()">
+
+    <!-- Tarjeta destacada del día -->
+    <div class="ug-card-featured tarjeta-dia">
+      <h2 class="ug-display nombre-rutina">{{ routineDay()!.nombre }}</h2>
+      <div class="chips-rutina">
+        <span class="ug-chip chip-dato">
+          <ion-icon name="fitness-outline"></ion-icon>
+          {{ routineDay()!.routine_exercises.length }} ejercicios
+        </span>
+        <span class="ug-chip chip-dato">
+          <ion-icon name="repeat-outline"></ion-icon>
+          {{ totalSeries() }} series
+        </span>
+      </div>
+    </div>
+
+    <!-- Lista de ejercicios -->
+    <ion-list lines="none" class="lista-ejercicios">
+      <ion-item
+        *ngFor="let re of routineDay()!.routine_exercises; let i = index"
+        button
+        detail="false"
+        class="item-ejercicio"
+        (click)="navigateToEjercicio(re)"
+      >
+        <!-- Thumbnail -->
+        <ion-thumbnail slot="start" class="thumbnail-ejercicio">
+          <img
+            *ngIf="re.exercise.thumbnail_url"
+            [src]="re.exercise.thumbnail_url"
+            [alt]="re.exercise.nombre"
+          />
+          <div class="thumbnail-placeholder" *ngIf="!re.exercise.thumbnail_url">
+            <ion-icon name="barbell-outline"></ion-icon>
+          </div>
+        </ion-thumbnail>
+
+        <!-- Contenido -->
+        <ion-label class="etiqueta-ejercicio">
+          <div class="fila-nombre">
+            <h3 class="nombre-ejercicio">{{ re.exercise.nombre }}</h3>
+            <span
+              class="ug-badge badge-dif"
+              [ngClass]="badgeDificultad(re.exercise.dificultad)"
+            >{{ labelDificultad(re.exercise.dificultad) }}</span>
+          </div>
+          <div class="fila-datos">
+            <span class="ug-datos dato-series">{{ re.series }} × {{ re.reps_min }}-{{ re.reps_max }}</span>
+            <span class="ug-chip chip-peso" *ngIf="re.peso_sugerido">~{{ re.peso_sugerido }} kg</span>
+            <span class="dato-descanso">{{ re.descanso_seg }}s</span>
+          </div>
+        </ion-label>
+
+        <ion-icon
+          slot="end"
+          name="chevron-forward-outline"
+          class="icono-chevron"
+        ></ion-icon>
+      </ion-item>
+    </ion-list>
+
+    <!-- Botón iniciar entrenamiento -->
+    <div class="contenedor-boton">
+      <ion-button
+        expand="block"
+        class="ug-btn-primary boton-iniciar"
+        [disabled]="iniciando()"
+        (click)="iniciarEntrenamiento()"
+      >
+        <ion-spinner *ngIf="iniciando()" name="crescent" class="spinner-boton"></ion-spinner>
+        <span *ngIf="!iniciando()">INICIAR ENTRENAMIENTO</span>
+      </ion-button>
+    </div>
+
+  </div>
+
 </ion-content>

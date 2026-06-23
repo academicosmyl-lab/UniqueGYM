@@ -1,8 +1,87 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title class="ug-display">UNIQUE GYM</ion-title>
-  </ion-toolbar>
-</ion-header>
-<ion-content class="ion-padding">
-  <p style="color: var(--ug-apagado)">Próximamente...</p>
+<ion-content class="login-content">
+  <div class="login-wrapper">
+
+    <!-- Logo -->
+    <div class="login-logo">
+      <h1 class="ug-display login-titulo">UNIQUE GYM</h1>
+      <p class="login-slogan">Forma tu cuerpo</p>
+    </div>
+
+    <!-- Formulario -->
+    <form [formGroup]="form" (ngSubmit)="login()" class="login-form">
+      <div class="ug-card login-card">
+
+        <!-- Email -->
+        <div class="campo-grupo">
+          <ion-input
+            formControlName="email"
+            type="email"
+            label="Correo electrónico"
+            labelPlacement="stacked"
+            placeholder="correo@ejemplo.com"
+            autocomplete="email"
+            inputmode="email"
+            fill="outline"
+            class="campo-input"
+          ></ion-input>
+          <p class="campo-error"
+             *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
+            Ingresa un correo válido.
+          </p>
+        </div>
+
+        <!-- Password -->
+        <div class="campo-grupo">
+          <ion-input
+            formControlName="password"
+            [type]="mostrarPassword() ? 'text' : 'password'"
+            label="Contraseña"
+            labelPlacement="stacked"
+            placeholder="••••••••"
+            autocomplete="current-password"
+            fill="outline"
+            class="campo-input"
+          >
+            <ion-button
+              slot="end"
+              fill="clear"
+              size="small"
+              class="toggle-pwd"
+              (click)="togglePassword()"
+              type="button"
+              aria-label="Mostrar u ocultar contraseña"
+            >
+              <ion-icon
+                slot="icon-only"
+                [name]="mostrarPassword() ? 'eye-off-outline' : 'eye-outline'"
+              ></ion-icon>
+            </ion-button>
+          </ion-input>
+          <p class="campo-error"
+             *ngIf="form.get('password')?.invalid && form.get('password')?.touched">
+            Ingresa tu contraseña.
+          </p>
+        </div>
+
+        <!-- Error global -->
+        <p class="error-global" *ngIf="errorMsg()">{{ errorMsg() }}</p>
+
+        <!-- Botón ingresar -->
+        <ion-button
+          type="submit"
+          expand="block"
+          class="ug-btn-primary boton-ingresar"
+          [disabled]="loading()"
+        >
+          <ion-spinner *ngIf="loading()" name="crescent" class="spinner-btn"></ion-spinner>
+          <span *ngIf="!loading()">INGRESAR</span>
+        </ion-button>
+
+      </div>
+    </form>
+
+    <!-- Footer -->
+    <p class="login-footer">Desarrollado por Asesorías Profesionales M&amp;L</p>
+
+  </div>
 </ion-content>

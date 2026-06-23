@@ -3,9 +3,198 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/tabs/hoy"></ion-back-button>
     </ion-buttons>
-    <ion-title class="ug-display">EJERCICIO</ion-title>
+    <ion-title class="titulo-ejercicio">
+      <span class="ug-display">{{ ejercicio()?.nombre ?? 'EJERCICIO' }}</span>
+    </ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content class="ion-padding">
-  <p style="color: var(--ug-apagado)">Próximamente...</p>
+
+<ion-content>
+
+  <!-- Sin datos de state (acceso directo) -->
+  <div class="estado-sin-datos" *ngIf="!routineExercise()">
+    <ion-icon name="alert-circle-outline" class="icono-alerta"></ion-icon>
+    <p class="texto-sin-datos">Accede a este ejercicio desde la rutina del día.</p>
+    <ion-button routerLink="/tabs/hoy" class="ug-btn-ghost">
+      Ir a rutina
+    </ion-button>
+  </div>
+
+  <!-- Contenido principal -->
+  <div *ngIf="routineExercise()">
+
+    <!-- SECCIÓN VIDEO -->
+    <div class="seccion-video">
+      <div class="contenedor-video" *ngIf="videoUrl()">
+        <iframe
+          [src]="videoUrl()"
+          class="video-iframe"
+          frameborder="0"
+          allowfullscreen
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          loading="lazy"
+        ></iframe>
+      </div>
+      <div class="video-placeholder" *ngIf="!videoUrl()">
+        <ion-icon name="play-circle-outline" class="icono-play"></ion-icon>
+        <p class="texto-sin-video">Sin video disponible</p>
+      </div>
+    </div>
+
+    <!-- SECCIÓN INFO -->
+    <div class="padding-lateral">
+
+      <div class="ug-card tarjeta-info">
+        <div class="fila-titulo-info">
+          <h2 class="ug-display nombre-ejercicio">{{ ejercicio()!.nombre }}</h2>
+          <span
+            class="ug-badge"
+            [ngClass]="badgeDificultad(ejercicio()!.dificultad)"
+          >{{ labelDificultad(ejercicio()!.dificultad) }}</span>
+        </div>
+        <p class="descripcion-texto" *ngIf="ejercicio()!.descripcion">
+          {{ ejercicio()!.descripcion }}
+        </p>
+      </div>
+
+      <!-- SECCIÓN PRESCRIPCIÓN -->
+      <div class="ug-card-featured tarjeta-prescripcion">
+        <h3 class="ug-display titulo-seccion">PRESCRIPCIÓN</h3>
+        <ion-grid class="grid-prescripcion">
+          <ion-row>
+            <!-- Series -->
+            <ion-col size="6" class="col-dato">
+              <span class="ug-datos valor-dato">{{ routineExercise()!.series }}</span>
+              <span class="label-dato">series</span>
+            </ion-col>
+            <!-- Reps -->
+            <ion-col size="6" class="col-dato">
+              <span class="ug-datos valor-dato">
+                {{ routineExercise()!.reps_min }}&nbsp;–&nbsp;{{ routineExercise()!.reps_max }}
+              </span>
+              <span class="label-dato">repeticiones</span>
+            </ion-col>
+            <!-- Peso sugerido -->
+            <ion-col size="6" class="col-dato" *ngIf="routineExercise()!.peso_sugerido">
+              <span class="ug-datos valor-dato">~{{ routineExercise()!.peso_sugerido }} kg</span>
+              <span class="label-dato">peso sugerido</span>
+            </ion-col>
+            <!-- Descanso -->
+            <ion-col [size]="routineExercise()!.peso_sugerido ? '6' : '12'" class="col-dato">
+              <span class="ug-datos valor-dato">{{ routineExercise()!.descanso_seg }}s</span>
+              <span class="label-dato">descanso</span>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+
+        <!-- Notas del entrenador -->
+        <div class="notas-entrenador" *ngIf="routineExercise()!.notas">
+          <ion-icon name="information-circle-outline" class="icono-info"></ion-icon>
+          <p class="texto-notas">{{ routineExercise()!.notas }}</p>
+        </div>
+      </div>
+
+      <!-- Alerta si no hay sesión -->
+      <div class="aviso-sin-sesion" *ngIf="!sessionId()">
+        <ion-icon name="warning-outline"></ion-icon>
+        <p>No hay entrenamiento iniciado.</p>
+        <ion-button
+          class="ug-btn-primary"
+          (click)="iniciarSesionDesdePantalla()"
+          [disabled]="iniciandoSesion()"
+        >
+          <ion-spinner *ngIf="iniciandoSesion()" name="crescent" style="width:18px;height:18px;color:var(--ug-negro)"></ion-spinner>
+          <span *ngIf="!iniciandoSesion()">Iniciar entrenamiento</span>
+        </ion-button>
+      </div>
+
+      <!-- SECCIÓN REGISTRO DE SERIES -->
+      <div class="seccion-series" *ngIf="sessionId()">
+        <h3 class="ug-display titulo-seccion">TUS SERIES</h3>
+
+        <div
+          *ngFor="let serie of series(); let i = index; trackBy: trackBySerie"
+          class="fila-serie"
+          [class.completada]="serie.completada"
+        >
+          <!-- Número de serie -->
+          <div class="numero-serie">
+            <span class="ug-datos texto-numero">{{ serie.numero }}</span>
+          </div>
+
+          <!-- Campos -->
+          <div class="campos-serie">
+            <ion-input
+              type="number"
+              placeholder="kg"
+              class="input-serie"
+              [(ngModel)]="serie.peso"
+              [disabled]="serie.completada || serie.guardando"
+              min="0"
+              inputmode="decimal"
+            ></ion-input>
+            <ion-input
+              type="number"
+              placeholder="reps"
+              class="input-serie"
+              [(ngModel)]="serie.reps"
+              [disabled]="serie.completada || serie.guardando"
+              min="0"
+              inputmode="numeric"
+            ></ion-input>
+            <ion-input
+              type="number"
+              placeholder="RPE"
+              class="input-serie input-rpe"
+              [(ngModel)]="serie.rpe"
+              [disabled]="serie.completada || serie.guardando"
+              min="1"
+              max="10"
+              inputmode="numeric"
+            ></ion-input>
+          </div>
+
+          <!-- Botón check -->
+          <div class="accion-serie">
+            <ion-button
+              fill="clear"
+              color="success"
+              class="boton-check"
+              (click)="guardarSerie(i)"
+              [disabled]="serie.completada || serie.guardando"
+            >
+              <ion-spinner *ngIf="serie.guardando" name="crescent" style="width:18px;height:18px;"></ion-spinner>
+              <ion-icon
+                *ngIf="!serie.guardando"
+                [name]="serie.completada ? 'checkmark-circle' : 'checkmark-circle-outline'"
+                slot="icon-only"
+                class="icono-check"
+              ></ion-icon>
+            </ion-button>
+          </div>
+        </div>
+
+        <!-- Error -->
+        <p class="error-series" *ngIf="errorMsg()">{{ errorMsg() }}</p>
+
+        <!-- Botón finalizar -->
+        <div class="contenedor-finalizar">
+          <ion-button
+            expand="block"
+            class="ug-btn-primary boton-finalizar"
+            (click)="finalizarEntrenamiento()"
+            [disabled]="finalizando()"
+          >
+            <ion-spinner *ngIf="finalizando()" name="crescent" class="spinner-btn"></ion-spinner>
+            <span *ngIf="!finalizando()">FINALIZAR ENTRENAMIENTO</span>
+          </ion-button>
+        </div>
+      </div>
+
+      <!-- Error global cuando no hay sesión activa -->
+      <p class="error-series" *ngIf="errorMsg() && !sessionId()">{{ errorMsg() }}</p>
+
+    </div>
+  </div>
+
 </ion-content>

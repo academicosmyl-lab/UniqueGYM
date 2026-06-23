@@ -1,1 +1,265 @@
-// Hoy page styles
+.contenido-padding {
+  padding: var(--ug-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ug-lg);
+}
+
+/* Header */
+.titulo-hoy {
+  font-size: 22px;
+  color: var(--ug-texto);
+  display: block;
+  line-height: 1.1;
+}
+
+.subtitulo-dia {
+  display: block;
+  font-size: 12px;
+  color: var(--ug-apagado);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  margin-top: 1px;
+}
+
+/* Estado error */
+.estado-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ug-md);
+  padding: var(--ug-2xl) var(--ug-lg);
+  text-align: center;
+
+  ion-icon {
+    font-size: 48px;
+    color: var(--ug-error);
+    opacity: 0.7;
+  }
+
+  p {
+    color: var(--ug-apagado);
+    font-size: 14px;
+    margin: 0;
+  }
+}
+
+.btn-reintentar {
+  --color: var(--ug-texto);
+  --border-color: var(--ug-linea);
+  --border-width: 1px;
+  --border-style: solid;
+  --border-radius: var(--ug-radio-md);
+}
+
+/* Skeleton */
+.skeleton-card {
+  margin-bottom: 0;
+}
+
+.skeleton-lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ug-md);
+}
+
+.skeleton-item {
+  padding: var(--ug-md) !important;
+}
+
+.skeleton-row {
+  display: flex;
+  gap: var(--ug-md);
+  align-items: center;
+}
+
+.skeleton-texto {
+  flex: 1;
+}
+
+/* Estado vacío */
+.estado-vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: var(--ug-md);
+  padding: var(--ug-2xl) var(--ug-lg);
+  text-align: center;
+}
+
+.icono-vacio {
+  font-size: 72px;
+  color: var(--ug-apagado);
+  opacity: 0.4;
+}
+
+.texto-vacio {
+  font-size: 22px;
+  color: var(--ug-apagado);
+  margin: 0;
+}
+
+.subtexto-vacio {
+  color: var(--ug-apagado);
+  font-size: 13px;
+  margin: 0;
+  opacity: 0.7;
+}
+
+/* Tarjeta del día */
+.tarjeta-dia {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ug-md);
+}
+
+.nombre-rutina {
+  font-size: 26px;
+  color: var(--ug-texto);
+  margin: 0;
+  line-height: 1;
+}
+
+.chips-rutina {
+  display: flex;
+  gap: var(--ug-sm);
+  flex-wrap: wrap;
+}
+
+.chip-dato {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  background: rgba(29, 222, 16, 0.06);
+
+  ion-icon {
+    font-size: 13px;
+  }
+}
+
+/* Lista de ejercicios */
+.lista-ejercicios {
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ug-sm);
+  padding: 0;
+}
+
+.item-ejercicio {
+  --background: var(--ug-superficie);
+  --border-radius: var(--ug-radio-lg);
+  --padding-start: var(--ug-md);
+  --padding-end: var(--ug-md);
+  --inner-padding-end: 0;
+  --min-height: 72px;
+  border: 1px solid var(--ug-linea);
+  border-radius: var(--ug-radio-lg);
+  box-shadow: var(--ug-sombra-tarjeta);
+  margin: 0;
+}
+
+.thumbnail-ejercicio {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--ug-radio-sm);
+  overflow: hidden;
+  margin-right: var(--ug-md);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.thumbnail-placeholder {
+  width: 100%;
+  height: 100%;
+  background: var(--ug-superficie-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--ug-radio-sm);
+
+  ion-icon {
+    font-size: 24px;
+    color: var(--ug-apagado);
+  }
+}
+
+.etiqueta-ejercicio {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  white-space: normal;
+}
+
+.fila-nombre {
+  display: flex;
+  align-items: center;
+  gap: var(--ug-sm);
+  flex-wrap: wrap;
+}
+
+.nombre-ejercicio {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ug-texto);
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+}
+
+.badge-dif {
+  flex-shrink: 0;
+}
+
+.fila-datos {
+  display: flex;
+  align-items: center;
+  gap: var(--ug-sm);
+  flex-wrap: wrap;
+}
+
+.dato-series {
+  font-size: 13px;
+  color: var(--ug-verde);
+}
+
+.chip-peso {
+  font-size: 11px;
+  background: rgba(29, 222, 16, 0.06);
+}
+
+.dato-descanso {
+  font-size: 11px;
+  color: var(--ug-apagado);
+}
+
+.icono-chevron {
+  color: var(--ug-apagado);
+  font-size: 16px;
+  margin-left: var(--ug-xs);
+}
+
+/* Botón iniciar */
+.contenedor-boton {
+  padding-bottom: var(--ug-xl);
+}
+
+.boton-iniciar {
+  height: 52px;
+  font-size: 16px;
+}
+
+.spinner-boton {
+  color: var(--ug-negro);
+  width: 20px;
+  height: 20px;
+}
