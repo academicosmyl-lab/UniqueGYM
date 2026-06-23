@@ -18,7 +18,8 @@ import { WorkoutSessionsModule } from './workout-sessions/workout-sessions.modul
       password: process.env.DB_PASS,
       database: process.env.DB_NAME,
       autoLoadEntities: true,
-      synchronize: false, // usar schema.sql / migraciones
+      synchronize: false,
+      ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
     }),
     AuthModule,
     UsersModule,
