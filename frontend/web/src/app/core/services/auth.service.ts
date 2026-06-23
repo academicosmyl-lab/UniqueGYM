@@ -11,7 +11,7 @@ export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
 
-  private readonly API = 'http://localhost:3000/api/v1';
+  private readonly API = 'https://uniquegym.onrender.com/api/v1';
 
   currentUser = signal<StoredUser | null>(this.loadUser());
   isLoggedIn = computed(() => !!this.currentUser());

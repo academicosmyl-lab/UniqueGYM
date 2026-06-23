@@ -5,7 +5,7 @@ import { tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { LoginResponse, StoredUser } from '../models/auth.model';
 
-const API_URL = 'http://localhost:3000/api/v1';
+const API_URL = 'https://uniquegym.onrender.com/api/v1';
 const STORAGE_KEY = 'ug_user';
 
 @Injectable({ providedIn: 'root' })
