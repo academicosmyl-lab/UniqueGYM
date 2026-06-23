@@ -1,0 +1,35 @@
+<!-- Shell: sidebar fijo + topbar + contenido -->
+<div class="shell">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <span class="ug-display" style="color:var(--ug-verde);font-size:22px">UNIQUE GYM</span>
+      <span style="color:var(--ug-apagado);font-size:11px">Panel de gestion</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">&#128202;</span> Dashboard
+      </a>
+      <a routerLink="/clientes" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">&#128101;</span> Clientes
+      </a>
+      <a routerLink="/rutinas" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">&#128170;</span> Rutinas
+      </a>
+      <a routerLink="/ejercicios" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">&#127947;</span> Ejercicios
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <span style="color:var(--ug-apagado);font-size:11px">{{ userName() }}</span>
+      <button class="ug-btn-ghost ug-btn-sm" (click)="logout()">Salir</button>
+    </div>
+  </aside>
+  <div class="main-area">
+    <header class="topbar">
+      <h1 class="ug-display page-title">{{ pageTitle() }}</h1>
+    </header>
+    <main class="content">
+      <router-outlet />
+    </main>
+  </div>
+</div>
