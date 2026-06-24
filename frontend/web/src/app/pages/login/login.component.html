@@ -13,41 +13,8 @@
     <div class="slide-overlay"></div>
   </div>
 
-  <!-- ══ LANDING: logo + botón + instagram ══ -->
+  <!-- ══ LANDING: solo botón + instagram ══ -->
   <div class="landing-content" [class.hidden]="showForm()">
-
-    <!-- Logo -->
-    <div class="ug-logo">
-      <div class="logo-circle">
-        <span class="logo-letra">U</span>
-      </div>
-      <div class="logo-text">
-        <span class="logo-nombre">UNIQUE GYM</span>
-        <span class="logo-lema">FORMA TU CUERPO</span>
-      </div>
-    </div>
-
-    <!-- Headline -->
-    <div class="headline">
-      <h1 class="headline-titulo">EL GYM QUE<br><span class="headline-verde">TRANSFORMA</span><br>TU VIDA</h1>
-      <p class="headline-sub">La Mesa, Cundinamarca · Centro Comercial Entrevías</p>
-    </div>
-
-    <!-- Botón ingresar -->
-    <button class="btn-ingresar" (click)="abrirForm()">
-      <span class="btn-texto">INGRESAR AL PANEL</span>
-      <span class="btn-flecha">→</span>
-    </button>
-
-    <!-- Instagram -->
-    <a [href]="INSTAGRAM" target="_blank" rel="noopener" class="ig-link">
-      <svg class="ig-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-        <circle cx="12" cy="12" r="4"/>
-        <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" stroke="none"/>
-      </svg>
-      <span>&#64;uniquegymoficial</span>
-    </a>
 
     <!-- Puntos de navegación -->
     <div class="slide-dots">
@@ -59,6 +26,15 @@
         ></button>
       }
     </div>
+
+    <!-- Botón ingresar -->
+    <button class="btn-ingresar" (click)="abrirForm()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="btn-icon">
+        <circle cx="12" cy="8" r="4"/>
+        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+      </svg>
+      <span>INGRESAR</span>
+    </button>
 
   </div>
 
@@ -191,15 +167,16 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  padding: 52px 24px 40px;
+  justify-content: flex-end;
+  padding: 0 24px 64px;
+  gap: 28px;
   transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
 .landing-content.hidden {
   opacity: 0;
   pointer-events: none;
-  transform: translateY(-16px);
+  transform: translateY(16px);
 }
 
 /* Logo */
