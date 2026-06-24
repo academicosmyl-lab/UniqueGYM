@@ -63,6 +63,7 @@ interface PagedResponse {
 export class EjerciciosComponent implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly API = 'https://uniquegym.onrender.com/api/v1';
+  private readonly BACKEND_BASE = this.API.replace('/api/v1', '');
 
   ejercicios = signal<Exercise[]>([]);
   musculos = signal<MuscleGroup[]>([]);
@@ -72,6 +73,8 @@ export class EjerciciosComponent implements OnInit {
   editingEjercicio = signal<Exercise | null>(null);
   total = signal(0);
   errorMsg = signal<string | null>(null);
+  uploadingGif = signal(false);
+  uploadingThumb = signal(false);
 
   filtros = signal<Filtros>({
     search: '',
@@ -200,6 +203,7 @@ export class EjerciciosComponent implements OnInit {
       nombre: this.form.nombre.trim(),
       descripcion: this.form.descripcion.trim() || null,
       instrucciones: this.form.instrucciones.trim() || null,
+      gif_url: this.form.gif_url.trim() || null,
       video_url: this.form.video_url.trim() || null,
       thumbnail_url: this.form.thumbnail_url.trim() || null,
       equipment_id: this.form.equipment_id || null,
@@ -221,6 +225,33 @@ export class EjerciciosComponent implements OnInit {
         this.cargarEjercicios();
       }
     });
+  }
+
+  onFileSelected(event: Event, campo: 'gif_url' | 'thumbnail_url'): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    const loading = campo === 'gif_url' ? this.uploadingGif : this.uploadingThumb;
+    loading.set(true);
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    this.http
+      .post<{ url: string }>(`${this.API}/upload/exercise-media`, formData)
+      .pipe(catchError((err) => {
+        this.errorMsg.set(err?.error?.message ?? 'Error al subir el archivo');
+        loading.set(false);
+        return of(null);
+      }))
+      .subscribe((res) => {
+        if (res) {
+          this.form[campo] = `${this.BACKEND_BASE}${res.url}`;
+        }
+        loading.set(false);
+        input.value = '';
+      });
   }
 
   deleteEjercicio(id: string): void {

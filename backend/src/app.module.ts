@@ -10,6 +10,7 @@ import { BodyCompositionModule } from './body-composition/body-composition.modul
 import { NutritionModule } from './nutrition/nutrition.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { AttendanceModule } from './attendance/attendance.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { AttendanceModule } from './attendance/attendance.module';
     NutritionModule,
     AnalyticsModule,
     AttendanceModule,
+    UploadModule,
   ],
 })
 export class AppModule {}

@@ -25,7 +25,7 @@ export class AnalyticsController {
 
   @Get('dashboard')
   @Roles(UserRole.ADMIN, UserRole.ENTRENADOR)
-  async dashboard(@CurrentUser() user: RequestUser) {
+  async dashboard(@CurrentUser() user: RequestUser): Promise<{ data: unknown }> {
     const data = await this.analyticsService.dashboardAdmin(user.gymId);
     return { data };
   }
@@ -34,7 +34,7 @@ export class AnalyticsController {
   @Roles(UserRole.ADMIN, UserRole.ENTRENADOR)
   async composicionCliente(
     @Param('clienteId', ParseUUIDPipe) clienteId: string,
-  ) {
+  ): Promise<{ data: unknown }> {
     const data = await this.analyticsService.progresoComposicion(clienteId);
     return { data };
   }
@@ -43,21 +43,21 @@ export class AnalyticsController {
   @Roles(UserRole.ADMIN, UserRole.ENTRENADOR)
   async entrenamientoCliente(
     @Param('clienteId', ParseUUIDPipe) clienteId: string,
-  ) {
+  ): Promise<{ data: unknown }> {
     const data = await this.analyticsService.progresoEntrenamiento(clienteId);
     return { data };
   }
 
   @Get('mi-progreso/composicion')
   @Roles(UserRole.CLIENTE)
-  async miComposicion(@CurrentUser() user: RequestUser) {
+  async miComposicion(@CurrentUser() user: RequestUser): Promise<{ data: unknown }> {
     const data = await this.analyticsService.progresoComposicion(user.id);
     return { data };
   }
 
   @Get('mi-progreso/entrenamiento')
   @Roles(UserRole.CLIENTE)
-  async miEntrenamiento(@CurrentUser() user: RequestUser) {
+  async miEntrenamiento(@CurrentUser() user: RequestUser): Promise<{ data: unknown }> {
     const data = await this.analyticsService.progresoEntrenamiento(user.id);
     return { data };
   }

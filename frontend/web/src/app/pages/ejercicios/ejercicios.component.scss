@@ -65,6 +65,21 @@
 
 .label-hint { font-size: 11px; color: var(--ug-apagado); font-weight: 400; }
 
+.campo-media {
+  display: flex;
+  gap: var(--ug-sm);
+  align-items: center;
+}
+
+.campo-media-url { flex: 1; }
+
+.campo-media-btn {
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  &.uploading { opacity: 0.6; pointer-events: none; }
+}
+
 .thumbnail-placeholder {
   width: 40px;
   height: 40px;

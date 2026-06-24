@@ -162,21 +162,38 @@
 
       <div class="campo">
         <label class="campo-label">GIF animado <span class="label-hint">(preview del movimiento)</span></label>
-        <input class="ug-input" type="url" [(ngModel)]="form.gif_url" name="gif_url"
-               placeholder="https://v2.exercisedb.io/image/0019.gif" />
+        <div class="campo-media">
+          <input class="ug-input campo-media-url" type="url" [(ngModel)]="form.gif_url" name="gif_url"
+                 placeholder="https://v2.exercisedb.io/image/0019.gif" />
+          <label class="ug-btn-ghost ug-btn-sm campo-media-btn" [class.uploading]="uploadingGif()">
+            <span *ngIf="!uploadingGif()">&#128247; Subir GIF</span>
+            <span *ngIf="uploadingGif()">Subiendo...</span>
+            <input type="file" accept="image/gif,image/webp,image/png,image/jpeg" hidden
+                   (change)="onFileSelected($event, 'gif_url')" [disabled]="uploadingGif()" />
+          </label>
+        </div>
         <img *ngIf="form.gif_url" [src]="form.gif_url" class="gif-preview-modal" alt="Preview GIF" />
       </div>
 
       <div class="campo">
-        <label class="campo-label">URL de video <span class="label-hint">(YouTube — próximamente)</span></label>
+        <label class="campo-label">URL de video <span class="label-hint">(YouTube)</span></label>
         <input class="ug-input" type="url" [(ngModel)]="form.video_url" name="video_url"
                placeholder="https://youtube.com/watch?v=..." />
       </div>
 
       <div class="campo">
-        <label class="campo-label">URL de thumbnail</label>
-        <input class="ug-input" type="url" [(ngModel)]="form.thumbnail_url" name="thumbnail_url"
-               placeholder="https://..." />
+        <label class="campo-label">Thumbnail</label>
+        <div class="campo-media">
+          <input class="ug-input campo-media-url" type="url" [(ngModel)]="form.thumbnail_url" name="thumbnail_url"
+                 placeholder="https://..." />
+          <label class="ug-btn-ghost ug-btn-sm campo-media-btn" [class.uploading]="uploadingThumb()">
+            <span *ngIf="!uploadingThumb()">&#128247; Subir imagen</span>
+            <span *ngIf="uploadingThumb()">Subiendo...</span>
+            <input type="file" accept="image/jpeg,image/png,image/webp" hidden
+                   (change)="onFileSelected($event, 'thumbnail_url')" [disabled]="uploadingThumb()" />
+          </label>
+        </div>
+        <img *ngIf="form.thumbnail_url && !form.gif_url" [src]="form.thumbnail_url" class="gif-preview-modal" alt="Preview thumbnail" />
       </div>
 
       <div class="campo">
