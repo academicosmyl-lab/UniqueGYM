@@ -1,282 +1,552 @@
-<div class="login-wrap">
+<div class="ug-landing">
 
-  <!-- Panel izquierdo: imagen del equipo -->
-  <div class="login-panel-img">
-    <img src="/gym-hero.png" alt="Equipo Unique Gym" class="hero-img" />
-    <div class="img-overlay"></div>
-    <div class="img-badge">
-      <span class="badge-lema">FORMA TU CUERPO</span>
-    </div>
+  <!-- ══ SLIDESHOW ══ -->
+  <div class="slideshow">
+    @for (slide of slides; track $index) {
+      <div
+        class="slide"
+        [class.active]="currentSlide() === $index"
+        [style.background-image]="'url(' + slide + ')'"
+      ></div>
+    }
+    <!-- Overlay oscuro degradado -->
+    <div class="slide-overlay"></div>
   </div>
 
-  <!-- Panel derecho: formulario -->
-  <div class="login-panel-form">
+  <!-- ══ LANDING: logo + botón + instagram ══ -->
+  <div class="landing-content" [class.hidden]="showForm()">
 
-    <div class="form-inner">
-      <!-- Marca -->
-      <div class="login-brand">
-        <div class="brand-circle">U</div>
-        <div class="brand-text">
-          <span class="brand-nombre">UNIQUE GYM</span>
-          <span class="brand-lema">Asesorías Profesionales M&amp;L</span>
-        </div>
+    <!-- Logo -->
+    <div class="ug-logo">
+      <div class="logo-circle">
+        <img src="/gym-1.jpg" alt="UG" class="logo-img" onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\'logo-letra\'>U</span>'" />
+      </div>
+      <div class="logo-text">
+        <span class="logo-nombre">UNIQUE GYM</span>
+        <span class="logo-lema">FORMA TU CUERPO</span>
+      </div>
+    </div>
+
+    <!-- Headline -->
+    <div class="headline">
+      <h1 class="headline-titulo">EL GYM QUE<br><span class="headline-verde">TRANSFORMA</span><br>TU VIDA</h1>
+      <p class="headline-sub">La Mesa, Cundinamarca · Centro Comercial Entrevías</p>
+    </div>
+
+    <!-- Botón ingresar -->
+    <button class="btn-ingresar" (click)="abrirForm()">
+      <span class="btn-texto">INGRESAR AL PANEL</span>
+      <span class="btn-flecha">→</span>
+    </button>
+
+    <!-- Instagram -->
+    <a [href]="INSTAGRAM" target="_blank" rel="noopener" class="ig-link">
+      <svg class="ig-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+        <circle cx="12" cy="12" r="4"/>
+        <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" stroke="none"/>
+      </svg>
+      <span>&#64;uniquegymoficial</span>
+    </a>
+
+    <!-- Puntos de navegación -->
+    <div class="slide-dots">
+      @for (slide of slides; track $index) {
+        <button
+          class="dot"
+          [class.dot-active]="currentSlide() === $index"
+          (click)="goToSlide($index)"
+        ></button>
+      }
+    </div>
+
+  </div>
+
+  <!-- ══ FORMULARIO: sube desde abajo ══ -->
+  <div class="form-sheet" [class.form-open]="showForm()">
+
+    <button class="btn-volver" (click)="volverLanding()">
+      <span>←</span> Volver
+    </button>
+
+    <div class="form-header">
+      <div class="form-logo-mini">
+        <div class="logo-mini-circle">U</div>
+        <span class="logo-mini-nombre">UNIQUE GYM</span>
+      </div>
+      <h2 class="form-titulo">Bienvenido</h2>
+      <p class="form-sub">Ingresa tus credenciales para continuar</p>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" #loginForm="ngForm" class="form-body">
+
+      <div class="field">
+        <label class="field-label">Correo electrónico</label>
+        <input
+          class="field-input"
+          type="email"
+          [(ngModel)]="email"
+          name="email"
+          placeholder="correo@ejemplo.com"
+          required
+          autocomplete="email"
+        />
       </div>
 
-      <h2 class="form-titulo">Bienvenido</h2>
-      <p class="form-sub">Panel de gestión — ingresa tus credenciales</p>
+      <div class="field">
+        <label class="field-label">Contraseña</label>
+        <input
+          class="field-input"
+          type="password"
+          [(ngModel)]="password"
+          name="password"
+          placeholder="••••••••"
+          required
+          autocomplete="current-password"
+        />
+      </div>
 
-      <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
-        <div class="field">
-          <label class="field-label">Correo electrónico</label>
-          <input
-            class="field-input"
-            type="email"
-            [(ngModel)]="email"
-            name="email"
-            placeholder="correo@ejemplo.com"
-            required
-            autocomplete="email"
-          />
-        </div>
+      @if (error()) {
+        <p class="field-error">{{ error() }}</p>
+      }
 
-        <div class="field">
-          <label class="field-label">Contraseña</label>
-          <input
-            class="field-input"
-            type="password"
-            [(ngModel)]="password"
-            name="password"
-            placeholder="••••••••"
-            required
-            autocomplete="current-password"
-          />
-        </div>
+      <button type="submit" class="btn-submit" [disabled]="loading()">
+        {{ loading() ? 'INGRESANDO...' : 'INGRESAR' }}
+      </button>
 
-        @if (error()) {
-          <p class="field-error">{{ error() }}</p>
-        }
-
-        <button type="submit" class="btn-ingresar" [disabled]="loading()">
-          {{ loading() ? 'INGRESANDO...' : 'INGRESAR' }}
-        </button>
-      </form>
-    </div>
+    </form>
 
   </div>
+
 </div>
 
 <style>
-  /* ── Layout principal ── */
-  .login-wrap {
-    position: fixed;
-    inset: 0;
-    display: flex;
+/* ══ Base ══ */
+.ug-landing {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  font-family: inherit;
+}
+
+/* ══ Slideshow ══ */
+.slideshow {
+  position: absolute;
+  inset: 0;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 1.2s ease-in-out;
+  transform: scale(1.04);
+  animation: subtle-zoom 10s ease-in-out infinite alternate;
+}
+
+.slide.active {
+  opacity: 1;
+}
+
+@keyframes subtle-zoom {
+  from { transform: scale(1.04); }
+  to   { transform: scale(1.08); }
+}
+
+.slide-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to top,  rgba(5,5,5,0.92) 0%, rgba(5,5,5,0.3) 40%, rgba(5,5,5,0.25) 100%),
+    linear-gradient(to right, rgba(5,5,5,0.15) 0%, transparent 100%);
+}
+
+/* ══ Landing content ══ */
+.landing-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 52px 24px 40px;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.landing-content.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-16px);
+}
+
+/* Logo */
+.ug-logo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.logo-circle {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #1DDE10;
+  box-shadow: 0 0 20px rgba(29,222,16,0.5), 0 0 40px rgba(29,222,16,0.2);
+  flex-shrink: 0;
+  background: #0a1a0a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.logo-letra {
+  font-size: 26px;
+  font-weight: 900;
+  color: #1DDE10;
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.logo-nombre {
+  font-size: 22px;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: 0.1em;
+  line-height: 1;
+}
+
+.logo-lema {
+  font-size: 10px;
+  color: #1DDE10;
+  letter-spacing: 0.28em;
+  font-weight: 700;
+  margin-top: 3px;
+}
+
+/* Headline */
+.headline {
+  text-align: center;
+}
+
+.headline-titulo {
+  font-size: clamp(36px, 9vw, 72px);
+  font-weight: 900;
+  color: #fff;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  margin: 0 0 14px;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+}
+
+.headline-verde {
+  color: #1DDE10;
+  text-shadow: 0 0 30px rgba(29,222,16,0.6);
+}
+
+.headline-sub {
+  font-size: 13px;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 0.08em;
+  margin: 0;
+}
+
+/* Botón ingresar */
+.btn-ingresar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 40px;
+  background: #1DDE10;
+  color: #050505;
+  border: none;
+  border-radius: 100px;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  box-shadow: 0 0 30px rgba(29,222,16,0.5), 0 8px 24px rgba(0,0,0,0.4);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s;
+  font-family: inherit;
+  position: relative;
+}
+
+.btn-ingresar::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 100px;
+  background: linear-gradient(135deg, #1DDE10, #0aaa08);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.btn-ingresar:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 0 50px rgba(29,222,16,0.65), 0 12px 32px rgba(0,0,0,0.4);
+  background: #25f715;
+}
+
+.btn-ingresar:active {
+  transform: translateY(0) scale(0.99);
+}
+
+.btn-texto { font-family: inherit; }
+
+.btn-flecha {
+  font-size: 18px;
+  transition: transform 0.2s;
+}
+
+.btn-ingresar:hover .btn-flecha {
+  transform: translateX(4px);
+}
+
+/* Instagram */
+.ig-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255,255,255,0.6);
+  text-decoration: none;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  transition: color 0.2s;
+  padding: 6px 12px;
+  border-radius: 8px;
+}
+
+.ig-link:hover {
+  color: #fff;
+}
+
+.ig-icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Dots */
+.slide-dots {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,0.3);
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.3s, transform 0.3s, width 0.3s;
+}
+
+.dot-active {
+  background: #1DDE10;
+  width: 24px;
+  border-radius: 4px;
+  box-shadow: 0 0 8px rgba(29,222,16,0.6);
+}
+
+/* ══ Form sheet (sube desde abajo) ══ */
+.form-sheet {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #050505;
+  border-radius: 28px 28px 0 0;
+  padding: 28px 28px 40px;
+  transform: translateY(100%);
+  transition: transform 0.45s cubic-bezier(0.34, 1.1, 0.64, 1);
+  max-height: 92vh;
+  overflow-y: auto;
+  box-shadow: 0 -8px 40px rgba(0,0,0,0.6);
+  border-top: 1px solid rgba(29,222,16,0.15);
+}
+
+.form-sheet.form-open {
+  transform: translateY(0);
+}
+
+/* Botón volver */
+.btn-volver {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.4);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+  transition: color 0.2s;
+  margin-bottom: 24px;
+}
+
+.btn-volver:hover { color: #fff; }
+
+/* Header del form */
+.form-header { margin-bottom: 28px; }
+
+.form-logo-mini {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.logo-mini-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #1DDE10;
+  color: #050505;
+  font-size: 18px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 12px rgba(29,222,16,0.4);
+}
+
+.logo-mini-nombre {
+  font-size: 16px;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: 0.08em;
+}
+
+.form-titulo {
+  font-size: 26px;
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 6px;
+}
+
+.form-sub {
+  font-size: 13px;
+  color: rgba(255,255,255,0.35);
+  margin: 0;
+}
+
+/* Campos */
+.form-body { display: flex; flex-direction: column; }
+
+.field { margin-bottom: 18px; }
+
+.field-label {
+  display: block;
+  font-size: 11px;
+  color: rgba(255,255,255,0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.field-input {
+  width: 100%;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  padding: 13px 16px;
+  color: #fff;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.field-input::placeholder { color: rgba(255,255,255,0.2); }
+
+.field-input:focus {
+  border-color: #1DDE10;
+  box-shadow: 0 0 0 3px rgba(29,222,16,0.12);
+  background: rgba(255,255,255,0.08);
+}
+
+.field-error {
+  font-size: 12px;
+  color: #ff6b6b;
+  background: rgba(255,107,107,0.08);
+  border: 1px solid rgba(255,107,107,0.2);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 14px;
+}
+
+.btn-submit {
+  width: 100%;
+  margin-top: 8px;
+  padding: 15px;
+  background: #1DDE10;
+  color: #050505;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 4px 20px rgba(29,222,16,0.35);
+  font-family: inherit;
+}
+
+.btn-submit:hover:not(:disabled) {
+  background: #25f715;
+  box-shadow: 0 6px 28px rgba(29,222,16,0.5);
+  transform: translateY(-1px);
+}
+
+.btn-submit:disabled { opacity: 0.55; cursor: not-allowed; }
+
+/* ══ Desktop: form lateral ══ */
+@media (min-width: 768px) {
+  .form-sheet {
+    left: auto;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 420px;
+    border-radius: 0;
+    max-height: 100vh;
+    transform: translateX(100%);
+    border-top: none;
+    border-left: 1px solid rgba(29,222,16,0.1);
   }
 
-  /* ── Panel izquierdo (imagen) ── */
-  .login-panel-img {
-    flex: 1;
-    position: relative;
-    overflow: hidden;
-    display: none;
+  .form-sheet.form-open {
+    transform: translateX(0);
   }
 
-  @media (min-width: 768px) {
-    .login-panel-img { display: block; }
+  .landing-content {
+    align-items: flex-start;
+    padding: 60px 64px 52px;
   }
 
-  .hero-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center top;
-    display: block;
-  }
+  .headline { text-align: left; }
 
-  .img-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      to right,
-      rgba(5, 5, 5, 0) 60%,
-      rgba(5, 5, 5, 0.85) 100%
-    );
-  }
+  .btn-ingresar { align-self: flex-start; }
 
-  .img-badge {
-    position: absolute;
-    bottom: 32px;
-    left: 32px;
-    background: rgba(29, 222, 16, 0.15);
-    border: 1px solid rgba(29, 222, 16, 0.4);
-    border-radius: 8px;
-    padding: 8px 16px;
-    backdrop-filter: blur(8px);
-  }
+  .ig-link { align-self: flex-start; }
 
-  .badge-lema {
-    font-size: 12px;
-    font-weight: 800;
-    color: #1DDE10;
-    letter-spacing: 0.2em;
-  }
-
-  /* ── Panel derecho (formulario) ── */
-  .login-panel-form {
-    width: 100%;
-    max-width: 460px;
-    background: #050505;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 40px 32px;
-    box-sizing: border-box;
-    border-left: 1px solid rgba(255,255,255,0.06);
-    overflow-y: auto;
-  }
-
-  .form-inner {
-    width: 100%;
-    max-width: 360px;
-  }
-
-  /* ── Marca ── */
-  .login-brand {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 40px;
-  }
-
-  .brand-circle {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: #1DDE10;
-    color: #050505;
-    font-size: 24px;
-    font-weight: 900;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 0 20px rgba(29, 222, 16, 0.4);
-    flex-shrink: 0;
-  }
-
-  .brand-text {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  .brand-nombre {
-    font-size: 20px;
-    font-weight: 900;
-    color: #ffffff;
-    letter-spacing: 0.08em;
-    line-height: 1;
-  }
-
-  .brand-lema {
-    font-size: 10px;
-    color: rgba(255,255,255,0.35);
-    letter-spacing: 0.04em;
-  }
-
-  /* ── Títulos ── */
-  .form-titulo {
-    font-size: 28px;
-    font-weight: 800;
-    color: #ffffff;
-    margin: 0 0 6px;
-    letter-spacing: -0.01em;
-  }
-
-  .form-sub {
-    font-size: 13px;
-    color: rgba(255,255,255,0.35);
-    margin: 0 0 32px;
-  }
-
-  /* ── Campos ── */
-  .field {
-    margin-bottom: 20px;
-  }
-
-  .field-label {
-    display: block;
-    font-size: 11px;
-    color: rgba(255,255,255,0.45);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-weight: 600;
-    margin-bottom: 8px;
-  }
-
-  .field-input {
-    width: 100%;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 10px;
-    padding: 13px 16px;
-    color: #ffffff;
-    font-size: 14px;
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-    box-sizing: border-box;
-    font-family: inherit;
-  }
-
-  .field-input::placeholder { color: rgba(255,255,255,0.2); }
-
-  .field-input:focus {
-    border-color: #1DDE10;
-    box-shadow: 0 0 0 3px rgba(29,222,16,0.12);
-    background: rgba(255,255,255,0.08);
-  }
-
-  .field-error {
-    font-size: 12px;
-    color: #ff6b6b;
-    margin: -8px 0 16px;
-    padding: 8px 12px;
-    background: rgba(255,107,107,0.08);
-    border-radius: 8px;
-    border: 1px solid rgba(255,107,107,0.2);
-  }
-
-  /* ── Botón ── */
-  .btn-ingresar {
-    width: 100%;
-    margin-top: 10px;
-    padding: 14px;
-    background: #1DDE10;
-    color: #050505;
-    border: none;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 800;
-    letter-spacing: 0.1em;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
-    box-shadow: 0 4px 20px rgba(29,222,16,0.3);
-    font-family: inherit;
-  }
-
-  .btn-ingresar:hover:not(:disabled) {
-    background: #25f715;
-    box-shadow: 0 6px 28px rgba(29,222,16,0.45);
-    transform: translateY(-1px);
-  }
-
-  .btn-ingresar:active:not(:disabled) { transform: translateY(0); }
-  .btn-ingresar:disabled { opacity: 0.55; cursor: not-allowed; }
-
-  /* ── Mobile: solo el formulario, sin imagen ── */
-  @media (max-width: 767px) {
-    .login-panel-form {
-      max-width: 100%;
-      padding: 40px 24px;
-    }
-  }
+  .slide-dots { align-self: flex-start; }
+}
 </style>
