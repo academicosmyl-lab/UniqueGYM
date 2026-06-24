@@ -1,0 +1,297 @@
+<div class="nutricion-page">
+
+  <div class="page-header">
+    <div class="header-left">
+      <h1 class="ug-display">NUTRICION</h1>
+      <span *ngIf="clienteId()" class="ug-text-apagado cliente-id-label">
+        Cliente: <span class="ug-datos">{{ clienteId() }}</span>
+      </span>
+    </div>
+    <button
+      *ngIf="!loading() && !error() && clienteId()"
+      class="ug-btn"
+      (click)="abrirFormPlan()"
+    >
+      + Nuevo plan
+    </button>
+  </div>
+
+  <div *ngIf="error()" class="ug-card estado-card">
+    <span class="icono-estado">&#9888;</span>
+    <p class="ug-text-error">{{ error() }}</p>
+  </div>
+
+  <ng-container *ngIf="loading() && !error()">
+    <div class="resumen-macros-grid">
+      <div *ngFor="let i of [1,2,3,4,5]" class="ug-card macro-card skeleton-card">
+        <div class="sk-label"></div>
+        <div class="sk-valor"></div>
+      </div>
+    </div>
+    <div class="ug-card skeleton-card" style="height:200px; margin-top:0;"></div>
+    <div class="ug-card skeleton-card" style="height:160px; margin-top:0;"></div>
+  </ng-container>
+
+  <ng-container *ngIf="!loading() && !error()">
+
+    <div *ngIf="mostrarFormPlan()" class="ug-card form-card">
+      <div class="form-card-header">
+        <span class="seccion-titulo ug-text-apagado">NUEVO PLAN NUTRICIONAL</span>
+        <button class="ug-btn-ghost ug-btn-sm" (click)="cerrarFormPlan()">&#10005; Cancelar</button>
+      </div>
+
+      <div class="form-grid">
+        <div class="campo">
+          <label class="campo-label ug-text-apagado">Objetivo</label>
+          <select class="ug-input" [(ngModel)]="nuevoPlan.objetivo">
+            <option *ngFor="let o of objetivos" [value]="o.valor">{{ o.etiqueta }}</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label class="campo-label ug-text-apagado">Calorias objetivo (kcal)</label>
+          <input
+            class="ug-input"
+            type="number"
+            placeholder="Se calcula automaticamente"
+            [(ngModel)]="nuevoPlan.kcal_objetivo"
+            min="0"
+          />
+        </div>
+
+        <div class="campo campo-full">
+          <label class="campo-label ug-text-apagado">Notas</label>
+          <textarea
+            class="ug-input"
+            rows="2"
+            placeholder="Observaciones del plan (opcional)"
+            [(ngModel)]="nuevoPlan.notas"
+          ></textarea>
+        </div>
+      </div>
+
+      <div *ngIf="errorPlan()" class="error-inline ug-text-error">{{ errorPlan() }}</div>
+
+      <div class="form-actions">
+        <button
+          class="ug-btn"
+          (click)="crearPlan()"
+          [disabled]="guardandoPlan()"
+        >
+          <span *ngIf="!guardandoPlan()">Crear plan</span>
+          <span *ngIf="guardandoPlan()">Creando...</span>
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="!planActivo() && !mostrarFormPlan()" class="ug-card estado-card">
+      <span class="icono-estado">&#127869;</span>
+      <p class="ug-text-apagado">Este cliente no tiene plan nutricional &mdash; crea uno arriba</p>
+      <button class="ug-btn" (click)="abrirFormPlan()">+ Crear plan</button>
+    </div>
+
+    <ng-container *ngIf="planActivo() as plan">
+
+      <div class="seccion">
+        <div class="seccion-titulo-row">
+          <span class="seccion-titulo ug-text-apagado">PLAN ACTIVO</span>
+          <div class="seccion-meta">
+            <span class="ug-badge-info">{{ formatFecha(plan.created_at) }}</span>
+            <span class="ug-badge objetivo-badge" [ngClass]="badgeObjetivo(plan.objetivo)">
+              {{ etiquetaObjetivo(plan.objetivo) }}
+            </span>
+          </div>
+        </div>
+
+        <div class="resumen-macros-grid">
+          <div class="ug-card macro-card">
+            <span class="macro-label ug-text-apagado">Calorias</span>
+            <span class="macro-valor ug-datos">{{ formatNum(plan.kcal_objetivo) }}</span>
+            <span class="macro-unit ug-text-apagado">kcal / dia</span>
+          </div>
+          <div class="ug-card macro-card">
+            <span class="macro-label ug-text-apagado">Proteina</span>
+            <span class="macro-valor ug-datos">{{ formatNum(plan.proteina_g) }}</span>
+            <span class="macro-unit ug-text-apagado">g / dia</span>
+          </div>
+          <div class="ug-card macro-card">
+            <span class="macro-label ug-text-apagado">Carbohidratos</span>
+            <span class="macro-valor ug-datos">{{ formatNum(plan.carbos_g) }}</span>
+            <span class="macro-unit ug-text-apagado">g / dia</span>
+          </div>
+          <div class="ug-card macro-card">
+            <span class="macro-label ug-text-apagado">Grasa</span>
+            <span class="macro-valor ug-datos">{{ formatNum(plan.grasa_g) }}</span>
+            <span class="macro-unit ug-text-apagado">g / dia</span>
+          </div>
+          <div class="ug-card macro-card">
+            <span class="macro-label ug-text-apagado">Agua</span>
+            <span class="macro-valor ug-datos">{{ formatNum(plan.agua_ml) }}</span>
+            <span class="macro-unit ug-text-apagado">ml / dia</span>
+          </div>
+        </div>
+
+        <div *ngIf="plan.notas" class="ug-card notas-card">
+          <span class="macro-label ug-text-apagado">Notas</span>
+          <p class="notas-texto">{{ plan.notas }}</p>
+        </div>
+      </div>
+
+      <div class="seccion">
+        <div class="seccion-titulo-row">
+          <span class="seccion-titulo ug-text-apagado">COMIDAS DEL PLAN</span>
+          <button
+            class="ug-btn-ghost ug-btn-sm btn-agregar-comida"
+            (click)="toggleFormComida(plan.id)"
+          >
+            + Agregar comida
+          </button>
+        </div>
+
+        <div *ngIf="mostrarFormComidaPorPlan[plan.id]" class="ug-card form-inline-card">
+          <div class="form-inline-row">
+            <input
+              class="ug-input form-inline-input"
+              type="text"
+              placeholder="Nombre de la comida (ej: Desayuno)"
+              [(ngModel)]="nombreComidaPorPlan[plan.id]"
+              (keyup.enter)="agregarComida(plan.id)"
+            />
+            <button
+              class="ug-btn ug-btn-sm"
+              (click)="agregarComida(plan.id)"
+              [disabled]="guardandoComida[plan.id] || !nombreComidaPorPlan[plan.id]?.trim()"
+            >
+              <span *ngIf="!guardandoComida[plan.id]">Agregar</span>
+              <span *ngIf="guardandoComida[plan.id]">...</span>
+            </button>
+            <button class="ug-btn-ghost ug-btn-sm" (click)="toggleFormComida(plan.id)">
+              &#10005;
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="!plan.comidas?.length && !mostrarFormComidaPorPlan[plan.id]" class="ug-card estado-card estado-card-sm">
+          <span class="icono-estado" style="font-size:22px">&#127874;</span>
+          <p class="ug-text-apagado">Aun no hay comidas en este plan</p>
+        </div>
+
+        <div *ngFor="let comida of plan.comidas" class="ug-card comida-card">
+          <div class="comida-header">
+            <div class="comida-titulo-row">
+              <span class="comida-nombre ug-datos">{{ comida.nombre }}</span>
+              <span class="ug-badge-info comida-kcal" *ngIf="totalKcalComida(comida) > 0">
+                {{ totalKcalComida(comida) }} kcal
+              </span>
+            </div>
+            <button
+              class="ug-btn-ghost ug-btn-sm btn-add-alimento"
+              (click)="toggleFormAlimento(comida.id)"
+            >
+              + Alimento
+            </button>
+          </div>
+
+          <div *ngIf="mostrarFormAlimentoPorComida[comida.id]" class="form-alimento">
+            <div class="form-alimento-grid">
+              <div class="campo campo-full">
+                <label class="campo-label ug-text-apagado">Alimento</label>
+                <input
+                  class="ug-input"
+                  type="text"
+                  placeholder="Nombre del alimento"
+                  [(ngModel)]="nuevoAlimentoPorComida[comida.id].alimento"
+                />
+              </div>
+              <div class="campo">
+                <label class="campo-label ug-text-apagado">Porcion</label>
+                <input
+                  class="ug-input"
+                  type="text"
+                  placeholder="ej: 100g"
+                  [(ngModel)]="nuevoAlimentoPorComida[comida.id].porcion"
+                />
+              </div>
+              <div class="campo">
+                <label class="campo-label ug-text-apagado">Kcal</label>
+                <input
+                  class="ug-input"
+                  type="number"
+                  placeholder="0"
+                  [(ngModel)]="nuevoAlimentoPorComida[comida.id].kcal"
+                  min="0"
+                />
+              </div>
+              <div class="campo">
+                <label class="campo-label ug-text-apagado">Proteina (g)</label>
+                <input
+                  class="ug-input"
+                  type="number"
+                  placeholder="0"
+                  [(ngModel)]="nuevoAlimentoPorComida[comida.id].proteina_g"
+                  min="0"
+                />
+              </div>
+              <div class="campo">
+                <label class="campo-label ug-text-apagado">Carbos (g)</label>
+                <input
+                  class="ug-input"
+                  type="number"
+                  placeholder="0"
+                  [(ngModel)]="nuevoAlimentoPorComida[comida.id].carbos_g"
+                  min="0"
+                />
+              </div>
+              <div class="campo">
+                <label class="campo-label ug-text-apagado">Grasa (g)</label>
+                <input
+                  class="ug-input"
+                  type="number"
+                  placeholder="0"
+                  [(ngModel)]="nuevoAlimentoPorComida[comida.id].grasa_g"
+                  min="0"
+                />
+              </div>
+            </div>
+            <div class="form-alimento-actions">
+              <button
+                class="ug-btn ug-btn-sm"
+                (click)="agregarAlimento(plan.id, comida.id)"
+                [disabled]="guardandoAlimento[comida.id] || !nuevoAlimentoPorComida[comida.id]?.alimento?.trim()"
+              >
+                <span *ngIf="!guardandoAlimento[comida.id]">Guardar alimento</span>
+                <span *ngIf="guardandoAlimento[comida.id]">Guardando...</span>
+              </button>
+              <button class="ug-btn-ghost ug-btn-sm" (click)="toggleFormAlimento(comida.id)">
+                Cancelar
+              </button>
+            </div>
+          </div>
+
+          <div *ngIf="comida.alimentos?.length" class="alimentos-lista">
+            <div *ngFor="let ali of comida.alimentos" class="alimento-fila">
+              <span class="alimento-nombre">{{ ali.alimento }}</span>
+              <span class="alimento-porcion ug-text-apagado" *ngIf="ali.porcion">
+                {{ ali.porcion }}
+              </span>
+              <div class="alimento-macros">
+                <span *ngIf="ali.kcal !== null" class="macro-chip chip-kcal">{{ ali.kcal }} kcal</span>
+                <span *ngIf="ali.proteina_g !== null" class="macro-chip chip-prot">P {{ ali.proteina_g }}g</span>
+                <span *ngIf="ali.carbos_g !== null" class="macro-chip chip-carb">C {{ ali.carbos_g }}g</span>
+                <span *ngIf="ali.grasa_g !== null" class="macro-chip chip-gras">G {{ ali.grasa_g }}g</span>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="!comida.alimentos?.length && !mostrarFormAlimentoPorComida[comida.id]"
+               class="alimentos-vacio ug-text-apagado">
+            Sin alimentos registrados
+          </div>
+        </div>
+      </div>
+
+    </ng-container>
+
+  </ng-container>
+
+</div>

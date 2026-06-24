@@ -29,7 +29,7 @@ interface WorkoutSession {
 })
 export class DashboardComponent implements OnInit {
   private readonly http = inject(HttpClient);
-  private readonly API = 'http://localhost:3000/api/v1';
+  private readonly API = 'https://uniquegym.onrender.com/api/v1';
 
   loading = signal(false);
   stats = signal<KpiStats>({

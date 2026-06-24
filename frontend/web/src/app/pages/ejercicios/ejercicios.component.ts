@@ -60,7 +60,7 @@ interface PagedResponse {
 })
 export class EjerciciosComponent implements OnInit {
   private readonly http = inject(HttpClient);
-  private readonly API = 'http://localhost:3000/api/v1';
+  private readonly API = 'https://uniquegym.onrender.com/api/v1';
 
   ejercicios = signal<Exercise[]>([]);
   musculos = signal<MuscleGroup[]>([]);

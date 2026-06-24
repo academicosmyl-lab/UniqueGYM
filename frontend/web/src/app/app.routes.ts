@@ -51,6 +51,14 @@ export const routes: Routes = [
             (m) => m.ComposicionComponent
           ),
       },
+      {
+        path: 'nutricion',
+        canActivate: [roleGuard(['ADMIN', 'ENTRENADOR'])],
+        loadComponent: () =>
+          import('./features/nutricion/nutricion.component').then(
+            (m) => m.NutricionComponent
+          ),
+      },
     ],
   },
   { path: '**', redirectTo: 'login' },

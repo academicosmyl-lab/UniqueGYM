@@ -40,7 +40,7 @@ interface RoutineForm {
 })
 export class RutinasComponent implements OnInit {
   private readonly http = inject(HttpClient);
-  private readonly API = 'http://localhost:3000/api/v1';
+  private readonly API = 'https://uniquegym.onrender.com/api/v1';
 
   rutinas = signal<Routine[]>([]);
   ejercicios = signal<Exercise[]>([]);

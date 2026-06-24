@@ -1,0 +1,410 @@
+.nutricion-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ug-xl);
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ug-md);
+  flex-wrap: wrap;
+
+  h1 {
+    font-size: 36px;
+    color: var(--ug-verde);
+  }
+}
+
+.header-left {
+  display: flex;
+  align-items: baseline;
+  gap: var(--ug-md);
+  flex-wrap: wrap;
+}
+
+.cliente-id-label {
+  font-size: 12px;
+}
+
+.seccion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ug-md);
+}
+
+.seccion-titulo-row {
+  display: flex;
+  align-items: center;
+  gap: var(--ug-md);
+  flex-wrap: wrap;
+}
+
+.seccion-titulo {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  flex: 1;
+}
+
+.seccion-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--ug-sm);
+  flex-wrap: wrap;
+}
+
+.resumen-macros-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--ug-md);
+}
+
+.macro-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ug-xs);
+  padding: var(--ug-lg);
+  min-height: 88px;
+  justify-content: space-between;
+}
+
+.macro-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.macro-valor {
+  font-size: 28px;
+  color: var(--ug-texto);
+  line-height: 1;
+}
+
+.macro-unit {
+  font-size: 11px;
+}
+
+.notas-card {
+  padding: var(--ug-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ug-xs);
+}
+
+.notas-texto {
+  font-size: 13px;
+  color: var(--ug-texto);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.objetivo-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--ug-radio-pill);
+  text-transform: uppercase;
+}
+
+.badge-perder {
+  background: rgba(29, 222, 16, 0.12);
+  color: var(--ug-verde);
+}
+
+.badge-ganar {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+}
+
+.badge-mantener {
+  background: rgba(220, 220, 220, 0.1);
+  color: var(--ug-plata-3);
+}
+
+.badge-recomp {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+}
+
+.form-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ug-lg);
+  padding: var(--ug-xl);
+  border: 1px solid rgba(29, 222, 16, 0.2);
+}
+
+.form-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ug-md);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--ug-md);
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ug-xs);
+
+  &.campo-full {
+    grid-column: 1 / -1;
+  }
+}
+
+.campo-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--ug-sm);
+}
+
+.error-inline {
+  font-size: 13px;
+}
+
+.btn-agregar-comida {
+  color: var(--ug-verde);
+  border-color: rgba(29, 222, 16, 0.3);
+}
+
+.form-inline-card {
+  padding: var(--ug-md);
+}
+
+.form-inline-row {
+  display: flex;
+  align-items: center;
+  gap: var(--ug-sm);
+  flex-wrap: wrap;
+}
+
+.form-inline-input {
+  flex: 1;
+  min-width: 200px;
+}
+
+.comida-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ug-md);
+  padding: var(--ug-lg);
+}
+
+.comida-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ug-md);
+  flex-wrap: wrap;
+}
+
+.comida-titulo-row {
+  display: flex;
+  align-items: center;
+  gap: var(--ug-sm);
+  flex-wrap: wrap;
+}
+
+.comida-nombre {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.comida-kcal {
+  font-size: 11px;
+}
+
+.btn-add-alimento {
+  font-size: 11px;
+  color: var(--ug-verde);
+  border-color: rgba(29, 222, 16, 0.25);
+  white-space: nowrap;
+}
+
+.form-alimento {
+  background: var(--ug-superficie-2);
+  border-radius: var(--ug-radio);
+  padding: var(--ug-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ug-md);
+  border: 1px solid var(--ug-borde);
+}
+
+.form-alimento-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--ug-sm) var(--ug-md);
+}
+
+.form-alimento-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--ug-sm);
+}
+
+.alimentos-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-top: 1px solid var(--ug-borde);
+  padding-top: var(--ug-sm);
+}
+
+.alimento-fila {
+  display: flex;
+  align-items: center;
+  gap: var(--ug-sm);
+  padding: var(--ug-xs) 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  flex-wrap: wrap;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.alimento-nombre {
+  font-size: 13px;
+  flex: 1;
+  min-width: 120px;
+}
+
+.alimento-porcion {
+  font-size: 12px;
+}
+
+.alimento-macros {
+  display: flex;
+  gap: var(--ug-xs);
+  flex-wrap: wrap;
+}
+
+.macro-chip {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: var(--ug-radio-pill);
+  white-space: nowrap;
+}
+
+.chip-kcal {
+  background: rgba(29, 222, 16, 0.1);
+  color: var(--ug-verde);
+}
+
+.chip-prot {
+  background: rgba(59, 130, 246, 0.12);
+  color: #93c5fd;
+}
+
+.chip-carb {
+  background: rgba(245, 158, 11, 0.12);
+  color: #fcd34d;
+}
+
+.chip-gras {
+  background: rgba(239, 68, 68, 0.12);
+  color: #fca5a5;
+}
+
+.alimentos-vacio {
+  font-size: 12px;
+  padding: var(--ug-xs) 0;
+}
+
+.estado-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ug-md);
+  padding: var(--ug-2xl);
+  text-align: center;
+}
+
+.estado-card-sm {
+  padding: var(--ug-lg);
+}
+
+.icono-estado {
+  font-size: 32px;
+  opacity: 0.5;
+}
+
+.skeleton-card {
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.04) 50%,
+      transparent 100%
+    );
+    animation: shimmer 1.4s infinite;
+  }
+}
+
+.sk-label {
+  height: 11px;
+  width: 60%;
+  background: var(--ug-superficie-2);
+  border-radius: var(--ug-radio-sm);
+  margin-bottom: var(--ug-sm);
+}
+
+.sk-valor {
+  height: 28px;
+  width: 80%;
+  background: var(--ug-superficie-3);
+  border-radius: var(--ug-radio-sm);
+}
+
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@media (max-width: 900px) {
+  .resumen-macros-grid {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+
+    h1 { font-size: 28px; }
+  }
+
+  .resumen-macros-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-alimento-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}

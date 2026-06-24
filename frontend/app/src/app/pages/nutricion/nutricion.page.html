@@ -1,8 +1,169 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title class="ug-display">NUTRICIÓN</ion-title>
+    <ion-title>
+      <span class="ug-display titulo-nutricion">NUTRICIÓN</span>
+      <span class="subtitulo-nutricion">Plan por objetivo</span>
+    </ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content class="ion-padding">
-  <p style="color: var(--ug-apagado)">Próximamente...</p>
+
+<ion-content>
+  <div class="contenido-padding">
+
+    <!-- Skeleton cargando -->
+    <ng-container *ngIf="cargando()">
+      <div class="ug-card skeleton-resumen">
+        <ion-skeleton-text animated style="width: 55%; height: 14px; border-radius: 4px;"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width: 35%; height: 36px; border-radius: 6px; margin-top: 8px;"></ion-skeleton-text>
+        <div class="skeleton-barras">
+          <ion-skeleton-text animated *ngFor="let i of [1,2,3]" style="width: 100%; height: 48px; border-radius: 8px;"></ion-skeleton-text>
+        </div>
+      </div>
+      <div class="ug-card skeleton-comida" *ngFor="let i of [1,2,3]">
+        <ion-skeleton-text animated style="width: 50%; height: 14px; border-radius: 4px;"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width: 80%; height: 12px; border-radius: 4px; margin-top: 8px;"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width: 70%; height: 12px; border-radius: 4px; margin-top: 6px;"></ion-skeleton-text>
+      </div>
+    </ng-container>
+
+    <!-- Sin plan -->
+    <div class="aviso-sin-plan" *ngIf="!cargando() && sinPlan()">
+      <ion-icon name="nutrition-outline"></ion-icon>
+      <p class="aviso-titulo">Sin plan activo</p>
+      <p class="aviso-texto">Tu entrenador aún no ha creado tu plan nutricional</p>
+    </div>
+
+    <!-- Error -->
+    <div class="aviso-error" *ngIf="!cargando() && errorMsg()">
+      <ion-icon name="alert-circle-outline"></ion-icon>
+      <p>{{ errorMsg() }}</p>
+      <ion-button fill="clear" class="btn-reintentar" (click)="cargarPlan()">Reintentar</ion-button>
+    </div>
+
+    <!-- Plan cargado -->
+    <ng-container *ngIf="!cargando() && plan() as p">
+
+      <!-- Resumen de macros -->
+      <div class="ug-card-featured resumen-card">
+        <div class="resumen-encabezado">
+          <div class="resumen-objetivo">
+            <ion-icon [name]="iconoObjetivo(p.objetivo)" class="objetivo-icono"></ion-icon>
+            <span class="objetivo-label">{{ labelObjetivo(p.objetivo) }}</span>
+          </div>
+          <div class="kcal-objetivo">
+            <span class="kcal-valor">{{ p.kcal_objetivo }}</span>
+            <span class="kcal-unidad">kcal/día</span>
+          </div>
+        </div>
+
+        <div class="macros-lista">
+
+          <div class="macro-fila">
+            <div class="macro-info">
+              <span class="macro-nombre proteina-color">Proteína</span>
+              <span class="macro-gramos">{{ p.proteina_g }} g</span>
+            </div>
+            <div class="barra-fondo">
+              <div class="barra-relleno proteina-barra" [style.width.%]="pctProteina(p)"></div>
+            </div>
+            <span class="macro-pct proteina-color">{{ pctProteina(p) }}%</span>
+          </div>
+
+          <div class="macro-fila">
+            <div class="macro-info">
+              <span class="macro-nombre carbos-color">Carbohidratos</span>
+              <span class="macro-gramos">{{ p.carbos_g }} g</span>
+            </div>
+            <div class="barra-fondo">
+              <div class="barra-relleno carbos-barra" [style.width.%]="pctCarbos(p)"></div>
+            </div>
+            <span class="macro-pct carbos-color">{{ pctCarbos(p) }}%</span>
+          </div>
+
+          <div class="macro-fila">
+            <div class="macro-info">
+              <span class="macro-nombre grasa-color">Grasa</span>
+              <span class="macro-gramos">{{ p.grasa_g }} g</span>
+            </div>
+            <div class="barra-fondo">
+              <div class="barra-relleno grasa-barra" [style.width.%]="pctGrasa(p)"></div>
+            </div>
+            <span class="macro-pct grasa-color">{{ pctGrasa(p) }}%</span>
+          </div>
+
+        </div>
+
+        <div class="agua-fila" *ngIf="p.agua_ml">
+          <ion-icon name="water-outline" class="agua-icono"></ion-icon>
+          <span class="agua-texto">Agua recomendada:&nbsp;</span>
+          <span class="agua-valor">{{ p.agua_ml }} ml</span>
+        </div>
+
+        <div class="notas-bloque" *ngIf="p.notas">
+          <ion-icon name="document-text-outline" class="notas-icono"></ion-icon>
+          <p class="notas-texto">{{ p.notas }}</p>
+        </div>
+      </div>
+
+      <!-- Comidas del día -->
+      <div class="seccion-titulo">
+        <span class="ug-display">COMIDAS DEL DÍA</span>
+        <span class="seccion-conteo">{{ mealsSorted(p).length }} comidas</span>
+      </div>
+
+      <ion-accordion-group [multiple]="true" class="comidas-grupo">
+        <ion-accordion
+          *ngFor="let comida of mealsSorted(p)"
+          [value]="comida.id"
+          class="comida-acordeon"
+        >
+          <ion-item slot="header" class="comida-header" lines="none">
+            <div class="comida-header-contenido">
+              <div class="comida-info">
+                <span class="comida-numero">{{ comida.orden }}</span>
+                <div class="comida-textos">
+                  <span class="comida-nombre">{{ comida.nombre }}</span>
+                  <span class="comida-items-count">{{ comida.items.length }} alimento{{ comida.items.length !== 1 ? 's' : '' }}</span>
+                </div>
+              </div>
+              <div class="comida-kcal" *ngIf="kcalComida(comida) != null">
+                <span class="comida-kcal-valor">{{ kcalComida(comida) }}</span>
+                <span class="comida-kcal-unidad">kcal</span>
+              </div>
+            </div>
+          </ion-item>
+
+          <div slot="content" class="comida-contenido">
+            <div class="sin-items" *ngIf="comida.items.length === 0">
+              <ion-icon name="cafe-outline"></ion-icon>
+              <span>Sin alimentos asignados</span>
+            </div>
+
+            <div class="item-alimento" *ngFor="let item of comida.items; let ultimo = last" [class.ultimo]="ultimo">
+              <div class="item-encabezado">
+                <span class="item-nombre">{{ item.alimento }}</span>
+                <span class="item-porcion" *ngIf="item.porcion">{{ item.porcion }}</span>
+              </div>
+              <div class="item-macros" *ngIf="item.kcal != null || item.proteina_g != null || item.carbos_g != null || item.grasa_g != null">
+                <span class="item-macro-chip kcal-chip" *ngIf="item.kcal != null">
+                  {{ item.kcal }} kcal
+                </span>
+                <span class="item-macro-chip p-chip" *ngIf="item.proteina_g != null">
+                  P {{ item.proteina_g }}g
+                </span>
+                <span class="item-macro-chip c-chip" *ngIf="item.carbos_g != null">
+                  C {{ item.carbos_g }}g
+                </span>
+                <span class="item-macro-chip g-chip" *ngIf="item.grasa_g != null">
+                  G {{ item.grasa_g }}g
+                </span>
+              </div>
+            </div>
+          </div>
+        </ion-accordion>
+      </ion-accordion-group>
+
+    </ng-container>
+
+  </div>
 </ion-content>

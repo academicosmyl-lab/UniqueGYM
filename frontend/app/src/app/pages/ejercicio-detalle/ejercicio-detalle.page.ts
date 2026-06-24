@@ -4,7 +4,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { HttpClient } from '@angular/common/http';
 import { RoutineExercise } from '../../core/models/rutina.model';
 
-const API_URL = 'http://localhost:3000/api/v1';
+const API_URL = 'https://uniquegym.onrender.com/api/v1';
 const SESSION_KEY = 'current_session_id';
 
 export interface SerieRegistro {

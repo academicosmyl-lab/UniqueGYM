@@ -3,7 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { RoutineDay, RoutineExercise } from '../../core/models/rutina.model';
 
-const API_URL = 'http://localhost:3000/api/v1';
+const API_URL = 'https://uniquegym.onrender.com/api/v1';
 const DIAS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 const SESSION_KEY = 'current_session_id';
 

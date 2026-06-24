@@ -58,7 +58,7 @@ const MOCK_CLIENTES: Cliente[] = [
 })
 export class ClientesComponent implements OnInit {
   private readonly http = inject(HttpClient);
-  private readonly API = 'http://localhost:3000/api/v1';
+  private readonly API = 'https://uniquegym.onrender.com/api/v1';
 
   clientes = signal<Cliente[]>([]);
   rutinas = signal<Routine[]>([]);
