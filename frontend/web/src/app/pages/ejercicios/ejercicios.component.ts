@@ -22,6 +22,7 @@ export interface Exercise {
   instrucciones?: string;
   video_url?: string;
   thumbnail_url?: string;
+  gif_url?: string;
   dificultad: 'PRINCIPIANTE' | 'INTERMEDIO' | 'AVANZADO';
   es_publico: boolean;
   equipment?: Equipment | null;
@@ -39,6 +40,7 @@ interface EjercicioForm {
   nombre: string;
   descripcion: string;
   instrucciones: string;
+  gif_url: string;
   video_url: string;
   thumbnail_url: string;
   equipment_id: string;
@@ -159,7 +161,7 @@ export class EjerciciosComponent implements OnInit {
     this.editingEjercicio.set(null);
     this.form = {
       nombre: '', descripcion: '', instrucciones: '',
-      video_url: '', thumbnail_url: '',
+      gif_url: '', video_url: '', thumbnail_url: '',
       equipment_id: '', dificultad: 'PRINCIPIANTE', es_publico: true,
     };
     this.errorMsg.set(null);
@@ -172,6 +174,7 @@ export class EjerciciosComponent implements OnInit {
       nombre: e.nombre,
       descripcion: e.descripcion ?? '',
       instrucciones: e.instrucciones ?? '',
+      gif_url: e.gif_url ?? '',
       video_url: e.video_url ?? '',
       thumbnail_url: e.thumbnail_url ?? '',
       equipment_id: e.equipment?.id ?? '',

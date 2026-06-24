@@ -68,12 +68,18 @@
           <td>
             <div class="ejercicio-cell">
               <img
-                *ngIf="e.thumbnail_url"
+                *ngIf="e.gif_url"
+                [src]="e.gif_url"
+                [alt]="e.nombre"
+                class="thumbnail gif-preview"
+              />
+              <img
+                *ngIf="!e.gif_url && e.thumbnail_url"
                 [src]="e.thumbnail_url"
                 [alt]="e.nombre"
                 class="thumbnail"
               />
-              <span *ngIf="!e.thumbnail_url" class="thumbnail-placeholder">&#127947;</span>
+              <span *ngIf="!e.gif_url && !e.thumbnail_url" class="thumbnail-placeholder">&#127947;</span>
               <div class="ejercicio-info">
                 <strong>{{ e.nombre }}</strong>
                 <span *ngIf="e.descripcion" class="ug-text-apagado desc-truncada">
@@ -155,7 +161,14 @@
       </div>
 
       <div class="campo">
-        <label class="campo-label">URL de video</label>
+        <label class="campo-label">GIF animado <span class="label-hint">(preview del movimiento)</span></label>
+        <input class="ug-input" type="url" [(ngModel)]="form.gif_url" name="gif_url"
+               placeholder="https://v2.exercisedb.io/image/0019.gif" />
+        <img *ngIf="form.gif_url" [src]="form.gif_url" class="gif-preview-modal" alt="Preview GIF" />
+      </div>
+
+      <div class="campo">
+        <label class="campo-label">URL de video <span class="label-hint">(YouTube — próximamente)</span></label>
         <input class="ug-input" type="url" [(ngModel)]="form.video_url" name="video_url"
                placeholder="https://youtube.com/watch?v=..." />
       </div>

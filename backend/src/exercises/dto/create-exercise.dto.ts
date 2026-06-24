@@ -36,6 +36,10 @@ export class CreateExerciseDto {
   thumbnail_url?: string;
 
   @IsOptional()
+  @IsUrl()
+  gif_url?: string;
+
+  @IsOptional()
   @IsUUID()
   equipment_id?: string;
 

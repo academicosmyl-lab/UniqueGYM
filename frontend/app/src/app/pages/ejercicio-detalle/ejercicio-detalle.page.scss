@@ -46,6 +46,23 @@
   background: var(--ug-superficie-3);
 }
 
+.contenedor-gif {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--ug-negro);
+  min-height: 220px;
+}
+
+.gif-ejercicio {
+  max-height: 280px;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  display: block;
+}
+
 .contenedor-video {
   position: relative;
   width: 100%;

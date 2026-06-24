@@ -37,6 +37,9 @@ export class Exercise {
   @Column({ type: 'text', name: 'thumbnail_url', nullable: true })
   thumbnail_url: string | null;
 
+  @Column({ type: 'text', name: 'gif_url', nullable: true })
+  gif_url: string | null;
+
   @Column({ type: 'uuid', name: 'equipment_id', nullable: true })
   equipment_id: string | null;
 

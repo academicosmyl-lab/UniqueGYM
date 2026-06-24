@@ -23,8 +23,20 @@
   <!-- Contenido principal -->
   <div *ngIf="routineExercise()">
 
-    <!-- SECCIÓN VIDEO -->
+    <!-- SECCIÓN MEDIA: GIF + Video -->
     <div class="seccion-video">
+
+      <!-- GIF animado (preview del movimiento) -->
+      <div class="contenedor-gif" *ngIf="ejercicio()?.gif_url && !videoUrl()">
+        <img
+          [src]="ejercicio()!.gif_url!"
+          class="gif-ejercicio"
+          alt="Animación del ejercicio"
+          loading="lazy"
+        />
+      </div>
+
+      <!-- Video (tiene prioridad sobre el GIF) -->
       <div class="contenedor-video" *ngIf="videoUrl()">
         <iframe
           [src]="videoUrl()"
@@ -35,10 +47,13 @@
           loading="lazy"
         ></iframe>
       </div>
-      <div class="video-placeholder" *ngIf="!videoUrl()">
+
+      <!-- Sin ninguno -->
+      <div class="video-placeholder" *ngIf="!videoUrl() && !ejercicio()?.gif_url">
         <ion-icon name="play-circle-outline" class="icono-play"></ion-icon>
         <p class="texto-sin-video">Sin video disponible</p>
       </div>
+
     </div>
 
     <!-- SECCIÓN INFO -->
