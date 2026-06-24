@@ -1,8 +1,211 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title class="ug-display">PROGRESO</ion-title>
+    <ion-title>
+      <span class="ug-display titulo-progreso">PROGRESO</span>
+      <span class="subtitulo-progreso">Tu evolución</span>
+    </ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content class="ion-padding">
-  <p style="color: var(--ug-apagado)">Próximamente...</p>
+
+<ion-content>
+  <div class="contenido-padding">
+
+    <ion-segment
+      [value]="segmento()"
+      (ionChange)="cambiarSegmento($event)"
+      class="segmento-principal"
+    >
+      <ion-segment-button value="cuerpo">
+        <ion-label class="ug-display seg-label">CUERPO</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="entrenamiento">
+        <ion-label class="ug-display seg-label">ENTRENAMIENTO</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <!-- ==================== SEGMENTO CUERPO ==================== -->
+    <div *ngIf="segmento() === 'cuerpo'">
+
+      <!-- Skeleton cuerpo -->
+      <ng-container *ngIf="cargandoCuerpo()">
+        <div class="ug-card skeleton-card">
+          <ion-skeleton-text animated style="width: 40%; height: 28px; border-radius: 6px;"></ion-skeleton-text>
+          <ion-skeleton-text animated style="width: 70%; height: 14px; border-radius: 4px; margin-top: 8px;"></ion-skeleton-text>
+        </div>
+        <div class="ug-card skeleton-card">
+          <ion-skeleton-text animated style="width: 55%; height: 14px; border-radius: 4px;"></ion-skeleton-text>
+          <ion-skeleton-text animated style="width: 100%; height: 12px; border-radius: 4px; margin-top: 12px;"></ion-skeleton-text>
+          <ion-skeleton-text animated style="width: 100%; height: 12px; border-radius: 4px; margin-top: 8px;"></ion-skeleton-text>
+        </div>
+        <div class="ug-card skeleton-card">
+          <ion-skeleton-text animated *ngFor="let i of [1,2,3,4,5]"
+            style="width: 100%; height: 36px; border-radius: 6px; margin-top: 6px;"></ion-skeleton-text>
+        </div>
+      </ng-container>
+
+      <!-- Error cuerpo -->
+      <div class="estado-mensaje" *ngIf="!cargandoCuerpo() && errorCuerpo()">
+        <ion-icon name="alert-circle-outline" class="icono-error"></ion-icon>
+        <p>{{ errorCuerpo() }}</p>
+        <ion-button fill="clear" class="btn-reintentar" (click)="cargarCuerpo()">Reintentar</ion-button>
+      </div>
+
+      <!-- Sin datos suficientes -->
+      <div class="estado-mensaje" *ngIf="!cargandoCuerpo() && !errorCuerpo() && !haySuficientesCuerpo()">
+        <ion-icon name="body-outline" class="icono-vacio"></ion-icon>
+        <p>Aún no hay suficientes datos para mostrar tendencias</p>
+        <span class="estado-hint">Registra al menos dos mediciones en la sección Cuerpo</span>
+      </div>
+
+      <!-- Contenido cuerpo -->
+      <ng-container *ngIf="!cargandoCuerpo() && !errorCuerpo() && haySuficientesCuerpo() && composicion()">
+
+        <!-- Badge tendencia -->
+        <div class="ug-card-featured tarjeta-tendencia">
+          <span class="tendencia-etiqueta ug-display">TENDENCIA GENERAL</span>
+          <div class="tendencia-badge" [ngClass]="claseTendencia()">
+            <span class="tendencia-texto">{{ labelTendencia() }} {{ emojiTendencia() }}</span>
+          </div>
+          <p class="tendencia-desc" *ngIf="composicion()!.tendencia === 'mejorando'">
+            Vas por buen camino. Sigue con tu rutina y tu alimentación.
+          </p>
+          <p class="tendencia-desc" *ngIf="composicion()!.tendencia === 'estable'">
+            Tus métricas se mantienen estables. Evalúa ajustar tu plan.
+          </p>
+          <p class="tendencia-desc" *ngIf="composicion()!.tendencia === 'empeorando'">
+            Hay una tendencia negativa. Habla con tu entrenador.
+          </p>
+        </div>
+
+        <!-- Barras de progreso peso y grasa -->
+        <div class="ug-card tarjeta-barras">
+          <h3 class="ug-display seccion-titulo">CAMBIO DESDE EL INICIO</h3>
+
+          <div class="barra-grupo">
+            <div class="barra-encabezado">
+              <span class="barra-nombre">Peso</span>
+              <span class="barra-valores">
+                {{ pesoInicial() }} kg → <strong>{{ pesoActual() }} kg</strong>
+              </span>
+            </div>
+            <div class="barra-pista">
+              <div class="barra-relleno barra-peso" [style.width.%]="porcentajePeso()"></div>
+            </div>
+          </div>
+
+          <div class="barra-grupo">
+            <div class="barra-encabezado">
+              <span class="barra-nombre">% Grasa</span>
+              <span class="barra-valores">
+                {{ grasaInicial() }}% → <strong>{{ grasaActual() }}%</strong>
+              </span>
+            </div>
+            <div class="barra-pista">
+              <div class="barra-relleno barra-grasa" [style.width.%]="porcentajeGrasa()"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabla últimas mediciones -->
+        <div class="ug-card tarjeta-tabla">
+          <h3 class="ug-display seccion-titulo">ÚLTIMAS MEDICIONES</h3>
+          <div class="tabla-cabecera">
+            <span class="col-fecha">Fecha</span>
+            <span class="col-num">Peso (kg)</span>
+            <span class="col-num">Grasa (%)</span>
+          </div>
+          <div class="tabla-fila" *ngFor="let fila of ultimasFilas()">
+            <span class="col-fecha fila-fecha">{{ fila.fecha | date:'d MMM yy' }}</span>
+            <span class="col-num fila-num">{{ fila.peso != null ? fila.peso : '—' }}</span>
+            <span class="col-num fila-num">{{ fila.grasa != null ? fila.grasa : '—' }}</span>
+          </div>
+        </div>
+
+      </ng-container>
+    </div>
+
+    <!-- ==================== SEGMENTO ENTRENAMIENTO ==================== -->
+    <div *ngIf="segmento() === 'entrenamiento'">
+
+      <!-- Skeleton entrenamiento -->
+      <ng-container *ngIf="cargandoEntrenamiento()">
+        <div class="ug-card skeleton-card">
+          <div class="skeleton-circulo"></div>
+          <ion-skeleton-text animated style="width: 50%; height: 14px; border-radius: 4px; margin-top: 12px;"></ion-skeleton-text>
+        </div>
+        <div class="ug-card skeleton-card">
+          <ion-skeleton-text animated *ngFor="let i of [1,2,3]"
+            style="width: 100%; height: 52px; border-radius: 8px; margin-top: 8px;"></ion-skeleton-text>
+        </div>
+      </ng-container>
+
+      <!-- Error entrenamiento -->
+      <div class="estado-mensaje" *ngIf="!cargandoEntrenamiento() && errorEntrenamiento()">
+        <ion-icon name="alert-circle-outline" class="icono-error"></ion-icon>
+        <p>{{ errorEntrenamiento() }}</p>
+        <ion-button fill="clear" class="btn-reintentar" (click)="cargarEntrenamiento()">Reintentar</ion-button>
+      </div>
+
+      <!-- Sin datos -->
+      <div class="estado-mensaje" *ngIf="!cargandoEntrenamiento() && !errorEntrenamiento() && !haySuficientesEntrenamiento()">
+        <ion-icon name="barbell-outline" class="icono-vacio"></ion-icon>
+        <p>Registra tus entrenamientos para ver tu progreso</p>
+      </div>
+
+      <!-- Contenido entrenamiento -->
+      <ng-container *ngIf="!cargandoEntrenamiento() && !errorEntrenamiento() && haySuficientesEntrenamiento() && entrenamiento()">
+
+        <!-- Adherencia circular -->
+        <div class="ug-card-featured tarjeta-adherencia">
+          <span class="ug-display seccion-titulo">ADHERENCIA AL PLAN</span>
+          <div class="adherencia-contenedor">
+            <div class="circulo-externo">
+              <div
+                class="circulo-arco"
+                [style]="'background: conic-gradient(var(--ug-verde) 0deg ' + adherenciaGrados() + 'deg, var(--ug-superficie-2) ' + adherenciaGrados() + 'deg 360deg);'"
+              ></div>
+              <div class="circulo-centro">
+                <span class="adherencia-numero">{{ entrenamiento()!.adherencia }}</span>
+                <span class="adherencia-signo">%</span>
+              </div>
+            </div>
+            <div class="adherencia-detalle">
+              <p class="adherencia-desc" *ngIf="entrenamiento()!.adherencia >= 80">
+                Excelente constancia. Eres un ejemplo a seguir.
+              </p>
+              <p class="adherencia-desc" *ngIf="entrenamiento()!.adherencia >= 50 && entrenamiento()!.adherencia < 80">
+                Buen ritmo. Un poco más de constancia y verás grandes cambios.
+              </p>
+              <p class="adherencia-desc" *ngIf="entrenamiento()!.adherencia < 50">
+                Puedes mejorar. Intenta no faltar a tus sesiones programadas.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Récords personales -->
+        <div class="ug-card tarjeta-records">
+          <h3 class="ug-display seccion-titulo">RÉCORDS PERSONALES</h3>
+
+          <div class="estado-mensaje estado-inline" *ngIf="!hayRecords()">
+            <ion-icon name="trophy-outline" class="icono-vacio icono-sm"></ion-icon>
+            <p>Registra tus entrenamientos para ver tu progreso</p>
+          </div>
+
+          <div class="record-item" *ngFor="let r of entrenamiento()!.records">
+            <div class="record-info">
+              <span class="record-ejercicio">{{ r.ejercicio }}</span>
+              <span class="record-fecha">{{ r.fecha | date:'d MMM yyyy' }}</span>
+            </div>
+            <div class="record-marca">
+              <span class="record-peso">{{ r.peso }} kg</span>
+              <span class="record-reps">× {{ r.reps }} reps</span>
+            </div>
+          </div>
+        </div>
+
+      </ng-container>
+    </div>
+
+  </div>
 </ion-content>

@@ -1,24 +1,18 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  inject,
+  signal,
+  computed,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import { forkJoin, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-
-interface KpiStats {
-  clientes_activos: string;
-  sesiones_hoy: string;
-  adherencia: string;
-  alertas: number;
-}
-
-interface WorkoutSession {
-  id: string;
-  cliente?: { nombres?: string; apellidos?: string };
-  modulo?: string;
-  fecha?: string;
-  estado?: string;
-}
+import { catchError, of } from 'rxjs';
+import {
+  AnalyticsService,
+  DashboardData,
+  AlertaDashboard,
+} from '../../core/services/analytics.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -28,17 +22,11 @@ interface WorkoutSession {
   styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent implements OnInit {
-  private readonly http = inject(HttpClient);
-  private readonly API = 'https://uniquegym.onrender.com/api/v1';
+  private readonly svc = inject(AnalyticsService);
 
-  loading = signal(false);
-  stats = signal<KpiStats>({
-    clientes_activos: '—',
-    sesiones_hoy: '—',
-    adherencia: '—',
-    alertas: 0,
-  });
-  recentSessions = signal<WorkoutSession[]>([]);
+  loading = signal(true);
+  error = signal<string | null>(null);
+  data = signal<DashboardData | null>(null);
 
   readonly fechaActual = new Date().toLocaleDateString('es-CO', {
     weekday: 'long',
@@ -47,20 +35,63 @@ export class DashboardComponent implements OnInit {
     day: 'numeric',
   });
 
+  clientesActivos = computed(() => this.data()?.clientesActivos ?? 0);
+  adherenciaPromedio = computed(() => this.data()?.adherenciaPromedio ?? 0);
+  alertas = computed(() => this.data()?.alertas ?? []);
+  totalAlertas = computed(() => this.alertas().length);
+
+  adherenciaPct = computed(() => {
+    const v = this.adherenciaPromedio();
+    return Math.min(100, Math.max(0, v));
+  });
+
   ngOnInit(): void {
-    this.loading.set(true);
-    forkJoin({
-      sessions: this.http
-        .get<WorkoutSession[]>(`${this.API}/workout-sessions?limit=5`)
-        .pipe(catchError(() => of([]))),
-    }).subscribe({
-      next: ({ sessions }) => {
-        this.recentSessions.set(sessions ?? []);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.loading.set(false);
-      },
-    });
+    this.svc
+      .getDashboard()
+      .pipe(catchError(() => of(null)))
+      .subscribe({
+        next: (res) => {
+          if (res) {
+            this.data.set(res);
+          } else {
+            this.error.set('No se pudo cargar el dashboard. Verifica la conexión.');
+          }
+          this.loading.set(false);
+        },
+        error: () => {
+          this.error.set('No se pudo cargar el dashboard. Verifica la conexión.');
+          this.loading.set(false);
+        },
+      });
+  }
+
+  claseAlerta(tipo: AlertaDashboard['tipo']): string {
+    switch (tipo) {
+      case 'sin_actividad':
+        return 'alerta-naranja';
+      case 'baja_adherencia':
+        return 'alerta-amarilla';
+      case 'grasa_aumentando':
+        return 'alerta-roja';
+      default:
+        return '';
+    }
+  }
+
+  labelTipo(tipo: AlertaDashboard['tipo']): string {
+    switch (tipo) {
+      case 'sin_actividad':
+        return 'Sin actividad';
+      case 'baja_adherencia':
+        return 'Baja adherencia';
+      case 'grasa_aumentando':
+        return '% Grasa aumentando';
+      default:
+        return tipo;
+    }
+  }
+
+  formatNum(val: number, decimales = 1): string {
+    return val.toFixed(decimales);
   }
 }

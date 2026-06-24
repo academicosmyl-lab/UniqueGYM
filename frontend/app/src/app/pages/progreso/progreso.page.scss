@@ -1,1 +1,411 @@
-// Progreso page styles
+.contenido-padding {
+  padding: var(--ug-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ug-lg);
+}
+
+.titulo-progreso {
+  font-size: 22px;
+  color: var(--ug-texto);
+  display: block;
+  line-height: 1.1;
+}
+
+.subtitulo-progreso {
+  display: block;
+  font-size: 12px;
+  color: var(--ug-apagado);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  margin-top: 1px;
+}
+
+.segmento-principal {
+  --background: var(--ug-superficie-2);
+  border-radius: var(--ug-radio-md);
+  overflow: hidden;
+
+  ion-segment-button {
+    --color: var(--ug-apagado);
+    --color-checked: var(--ug-negro);
+    --background-checked: var(--ug-verde);
+    --indicator-color: transparent;
+    --border-radius: var(--ug-radio-md);
+    min-height: 40px;
+  }
+}
+
+.seg-label {
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+
+.seccion-titulo {
+  font-size: 11px;
+  color: var(--ug-verde);
+  letter-spacing: 1px;
+  margin: 0 0 var(--ug-md) 0;
+}
+
+/* ── Skeleton ── */
+.skeleton-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ug-sm);
+  padding: var(--ug-lg);
+}
+
+.skeleton-circulo {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: var(--ug-superficie-2);
+  align-self: center;
+}
+
+/* ── Estados vacío / error ── */
+.estado-mensaje {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ug-sm);
+  padding: var(--ug-xl) var(--ug-lg);
+  border: 1px dashed var(--ug-linea);
+  border-radius: var(--ug-radio-lg);
+  text-align: center;
+
+  p {
+    color: var(--ug-apagado);
+    font-size: 13px;
+    margin: 0;
+  }
+}
+
+.estado-inline {
+  border: none;
+  padding: var(--ug-md) 0;
+}
+
+.icono-vacio {
+  font-size: 40px;
+  color: var(--ug-verde);
+  opacity: 0.6;
+}
+
+.icono-sm {
+  font-size: 28px;
+}
+
+.icono-error {
+  font-size: 36px;
+  color: var(--ug-error);
+}
+
+.estado-hint {
+  font-size: 11px;
+  color: var(--ug-apagado);
+}
+
+.btn-reintentar {
+  --color: var(--ug-verde);
+  font-size: 13px;
+}
+
+/* ── Tendencia ── */
+.tarjeta-tendencia {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ug-sm);
+}
+
+.tendencia-etiqueta {
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: var(--ug-verde);
+}
+
+.tendencia-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  width: fit-content;
+
+  &.mejorando {
+    background: rgba(29, 222, 16, 0.15);
+    border: 1px solid var(--ug-verde);
+  }
+
+  &.estable {
+    background: rgba(220, 220, 220, 0.1);
+    border: 1px solid var(--ug-plata);
+  }
+
+  &.empeorando {
+    background: rgba(229, 57, 53, 0.12);
+    border: 1px solid var(--ug-error);
+  }
+}
+
+.tendencia-texto {
+  font-size: 15px;
+  font-weight: 700;
+
+  .mejorando & { color: var(--ug-verde); }
+  .estable & { color: var(--ug-plata); }
+  .empeorando & { color: var(--ug-error); }
+}
+
+.tendencia-desc {
+  font-size: 12px;
+  color: var(--ug-apagado);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ── Barras de progreso ── */
+.tarjeta-barras {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ug-md);
+}
+
+.barra-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.barra-encabezado {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.barra-nombre {
+  font-size: 12px;
+  color: var(--ug-apagado);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.barra-valores {
+  font-size: 12px;
+  color: var(--ug-apagado);
+
+  strong {
+    color: var(--ug-texto);
+    font-weight: 700;
+  }
+}
+
+.barra-pista {
+  width: 100%;
+  height: 8px;
+  background: var(--ug-superficie-2);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.barra-relleno {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.5s ease;
+  min-width: 4px;
+}
+
+.barra-peso {
+  background: var(--ug-verde);
+}
+
+.barra-grasa {
+  background: var(--ug-ambar, #f59e0b);
+}
+
+/* ── Tabla últimas mediciones ── */
+.tarjeta-tabla {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.tabla-cabecera {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: var(--ug-md);
+  padding-bottom: var(--ug-sm);
+  border-bottom: 1px solid var(--ug-linea);
+  margin-bottom: var(--ug-sm);
+}
+
+.col-fecha {
+  font-size: 10px;
+  color: var(--ug-apagado);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.col-num {
+  font-size: 10px;
+  color: var(--ug-apagado);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+  text-align: right;
+  min-width: 64px;
+}
+
+.tabla-fila {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: var(--ug-md);
+  padding: 10px 0;
+  border-bottom: 1px solid var(--ug-linea);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.fila-fecha {
+  font-size: 13px;
+  color: var(--ug-texto);
+}
+
+.fila-num {
+  font-size: 13px;
+  color: var(--ug-texto);
+  font-weight: 600;
+  text-align: right;
+  min-width: 64px;
+}
+
+/* ── Adherencia circular ── */
+.tarjeta-adherencia {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ug-md);
+}
+
+.adherencia-contenedor {
+  display: flex;
+  align-items: center;
+  gap: var(--ug-lg);
+}
+
+.circulo-externo {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  flex-shrink: 0;
+}
+
+.circulo-arco {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.circulo-centro {
+  position: absolute;
+  inset: 8px;
+  background: var(--ug-superficie);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  gap: 1px;
+}
+
+.adherencia-numero {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--ug-texto);
+  line-height: 1;
+}
+
+.adherencia-signo {
+  font-size: 14px;
+  color: var(--ug-verde);
+  font-weight: 700;
+  align-self: flex-end;
+  margin-bottom: 4px;
+}
+
+.adherencia-detalle {
+  flex: 1;
+}
+
+.adherencia-desc {
+  font-size: 13px;
+  color: var(--ug-apagado);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ── Récords personales ── */
+.tarjeta-records {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.record-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--ug-linea);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.record-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.record-ejercicio {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ug-texto);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.record-fecha {
+  font-size: 11px;
+  color: var(--ug-apagado);
+}
+
+.record-marca {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+  margin-left: var(--ug-md);
+}
+
+.record-peso {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--ug-verde);
+  line-height: 1.1;
+}
+
+.record-reps {
+  font-size: 11px;
+  color: var(--ug-apagado);
+}

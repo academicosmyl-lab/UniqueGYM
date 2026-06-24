@@ -8,6 +8,7 @@ import { RoutinesModule } from './routines/routines.module';
 import { WorkoutSessionsModule } from './workout-sessions/workout-sessions.module';
 import { BodyCompositionModule } from './body-composition/body-composition.module';
 import { NutritionModule } from './nutrition/nutrition.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { NutritionModule } from './nutrition/nutrition.module';
     WorkoutSessionsModule,
     BodyCompositionModule,
     NutritionModule,
+    AnalyticsModule,
     // Próximos módulos por fases:
     // AttendanceModule
   ],

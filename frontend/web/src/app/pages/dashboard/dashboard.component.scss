@@ -17,10 +17,9 @@
   }
 }
 
-/* Grid KPIs */
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: var(--ug-lg);
 }
 
@@ -38,39 +37,113 @@
 }
 
 .kpi-valor {
-  font-size: 32px;
+  font-size: 36px;
   line-height: 1;
 }
 
-/* Sección tabla */
+.barra-wrap {
+  height: 6px;
+  background: var(--ug-superficie-2);
+  border-radius: var(--ug-radio-pill);
+  overflow: hidden;
+  margin-top: var(--ug-xs);
+}
+
+.barra-fill {
+  height: 100%;
+  border-radius: var(--ug-radio-pill);
+  transition: width 0.6s ease;
+
+  &.barra-baja  { background: #e0653f; }
+  &.barra-media { background: #e0c53f; }
+  &.barra-alta  { background: var(--ug-verde); }
+}
+
 .seccion-card {
   padding: var(--ug-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ug-lg);
+}
+
+.seccion-titulo-row {
+  display: flex;
+  align-items: center;
+  gap: var(--ug-md);
 }
 
 .seccion-titulo {
   font-size: 18px;
-  margin-bottom: var(--ug-lg);
+  flex: 1;
 }
 
-/* Skeleton */
-.skeleton-cell {
-  background: var(--ug-superficie-2);
-  border-radius: var(--ug-radio-md);
-  height: 16px;
-  width: 100%;
-  animation: shimmer 1.6s infinite;
+.badge-count {
+  font-size: 13px;
+  padding: 2px 12px;
 }
 
-@keyframes shimmer {
-  0%   { opacity: 0.6; }
-  50%  { opacity: 1; }
-  100% { opacity: 0.6; }
+.estado-vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ug-md);
+  padding: var(--ug-xl) 0;
+  text-align: center;
 }
 
-/* Grid accesos */
+.icono-estado {
+  font-size: 32px;
+  opacity: 0.5;
+}
+
+.tabla-card {
+  overflow-x: auto;
+
+  table { min-width: 600px; }
+}
+
+.celda-nombre {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.celda-mensaje {
+  font-size: 13px;
+  color: var(--ug-apagado);
+}
+
+.alerta-naranja td {
+  border-left: 3px solid #e07a3f;
+  background: rgba(224, 122, 63, 0.05);
+}
+
+.alerta-amarilla td {
+  border-left: 3px solid #e0c53f;
+  background: rgba(224, 197, 63, 0.05);
+}
+
+.alerta-roja td {
+  border-left: 3px solid var(--ug-error);
+  background: rgba(224, 63, 63, 0.06);
+}
+
+.tipo-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--ug-radio-pill);
+  text-transform: uppercase;
+  white-space: nowrap;
+
+  &.tipo-sin_actividad   { background: rgba(224, 122, 63, 0.18); color: #e07a3f; }
+  &.tipo-baja_adherencia { background: rgba(224, 197, 63, 0.18); color: #c8a800; }
+  &.tipo-grasa_aumentando { background: rgba(224, 63,  63, 0.18); color: var(--ug-error); }
+}
+
 .accesos-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: var(--ug-lg);
 }
 
@@ -91,22 +164,71 @@
   }
 }
 
-.acceso-icono {
-  font-size: 32px;
-  line-height: 1;
-}
+.acceso-icono { font-size: 32px; line-height: 1; }
 
-.acceso-label {
-  font-size: 15px;
+.acceso-label { font-size: 13px; text-align: center; }
+
+.estado-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ug-md);
+  padding: var(--ug-2xl);
   text-align: center;
 }
 
-/* Responsive */
+.tabla-skeleton {
+  height: 240px;
+}
+
+.skeleton-card {
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.04) 50%,
+      transparent 100%
+    );
+    animation: shimmer 1.4s infinite;
+  }
+}
+
+.sk-label {
+  height: 11px;
+  width: 55%;
+  background: var(--ug-superficie-2);
+  border-radius: var(--ug-radio-sm);
+  margin-bottom: var(--ug-sm);
+}
+
+.sk-valor {
+  height: 36px;
+  width: 70%;
+  background: var(--ug-superficie-3);
+  border-radius: var(--ug-radio-sm);
+}
+
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@media (max-width: 1100px) {
+  .accesos-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
 @media (max-width: 900px) {
-  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .kpi-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 600px) {
-  .kpi-grid   { grid-template-columns: 1fr; }
   .accesos-grid { grid-template-columns: 1fr; }
+
+  .page-header h1 { font-size: 28px; }
 }

@@ -34,6 +34,14 @@
       >
         <span class="nav-icon">&#127869;</span> Nutricion
       </a>
+      <a
+        *ngIf="esAdminOEntrenador()"
+        routerLink="/progreso"
+        routerLinkActive="active"
+        class="nav-item"
+      >
+        <span class="nav-icon">&#128200;</span> Progreso
+      </a>
     </nav>
     <div class="sidebar-footer">
       <span style="color:var(--ug-apagado);font-size:11px">{{ userName() }}</span>

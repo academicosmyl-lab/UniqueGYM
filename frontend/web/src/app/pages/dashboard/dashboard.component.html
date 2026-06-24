@@ -1,92 +1,111 @@
 <div class="dashboard-page">
 
-  <!-- Cabecera -->
   <div class="page-header">
     <h1 class="ug-display">DASHBOARD</h1>
     <p class="ug-text-apagado fecha-actual">{{ fechaActual }}</p>
   </div>
 
-  <!-- KPIs -->
-  <div class="kpi-grid">
-
-    <div class="ug-card kpi-card">
-      <span class="kpi-label ug-text-apagado">CLIENTES ACTIVOS</span>
-      <span class="kpi-valor ug-datos ug-text-verde">{{ stats().clientes_activos }}</span>
-    </div>
-
-    <div class="ug-card kpi-card">
-      <span class="kpi-label ug-text-apagado">SESIONES HOY</span>
-      <span class="kpi-valor ug-datos ug-text-verde">{{ stats().sesiones_hoy }}</span>
-    </div>
-
-    <div class="ug-card kpi-card">
-      <span class="kpi-label ug-text-apagado">ADHERENCIA PROM.</span>
-      <span class="kpi-valor ug-datos ug-text-verde">{{ stats().adherencia }}</span>
-    </div>
-
-    <div class="ug-card kpi-card">
-      <span class="kpi-label ug-text-apagado">ALERTAS</span>
-      <span
-        *ngIf="stats().alertas > 0"
-        class="kpi-valor ug-badge-err"
-        style="font-size:24px; padding: 4px 16px;"
-      >{{ stats().alertas }}</span>
-      <span
-        *ngIf="stats().alertas === 0"
-        class="ug-badge-ok"
-        style="margin-top: var(--ug-sm); font-size:12px;"
-      >OK</span>
-    </div>
-
+  <div *ngIf="error()" class="ug-card estado-card">
+    <span class="icono-estado">&#9888;</span>
+    <p class="ug-text-error">{{ error() }}</p>
   </div>
 
-  <!-- Actividad reciente -->
-  <div class="ug-card seccion-card">
-    <h2 class="ug-display seccion-titulo">ACTIVIDAD RECIENTE</h2>
+  <ng-container *ngIf="loading() && !error()">
+    <div class="kpi-grid">
+      <div *ngFor="let i of [1,2]" class="ug-card kpi-card skeleton-card">
+        <div class="sk-label"></div>
+        <div class="sk-valor"></div>
+      </div>
+    </div>
+    <div class="ug-card skeleton-card tabla-skeleton"></div>
+  </ng-container>
 
-    <table class="ug-table">
-      <thead>
-        <tr>
-          <th>Cliente</th>
-          <th>Módulo</th>
-          <th>Fecha</th>
-          <th>Estado</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Skeleton rows -->
-        <tr *ngFor="let i of [1,2,3]">
-          <td><div class="skeleton-cell"></div></td>
-          <td><div class="skeleton-cell" style="width:70%"></div></td>
-          <td><div class="skeleton-cell" style="width:60%"></div></td>
-          <td><div class="skeleton-cell" style="width:50%"></div></td>
-        </tr>
-      </tbody>
-    </table>
+  <ng-container *ngIf="!loading() && !error()">
 
-    <p class="ug-text-apagado nota-fase" style="margin-top:var(--ug-lg); font-size:12px;">
-      Los datos reales se cargarán en Fase 5 (estadística)
-    </p>
-  </div>
+    <div class="kpi-grid">
 
-  <!-- Accesos rápidos -->
-  <div class="accesos-grid">
+      <div class="ug-card kpi-card">
+        <span class="kpi-label ug-text-apagado">CLIENTES ACTIVOS</span>
+        <span class="kpi-valor ug-datos ug-text-verde">{{ clientesActivos() }}</span>
+      </div>
 
-    <a routerLink="/clientes" class="ug-card acceso-card">
-      <span class="acceso-icono">&#128101;</span>
-      <span class="ug-display acceso-label">VER CLIENTES</span>
-    </a>
+      <div class="ug-card kpi-card">
+        <span class="kpi-label ug-text-apagado">ADHERENCIA PROMEDIO</span>
+        <span class="kpi-valor ug-datos ug-text-verde">{{ formatNum(adherenciaPromedio(), 1) }}%</span>
+        <div class="barra-wrap">
+          <div
+            class="barra-fill"
+            [style.width.%]="adherenciaPct()"
+            [class.barra-baja]="adherenciaPct() < 50"
+            [class.barra-media]="adherenciaPct() >= 50 && adherenciaPct() < 75"
+            [class.barra-alta]="adherenciaPct() >= 75"
+          ></div>
+        </div>
+      </div>
 
-    <a routerLink="/rutinas" class="ug-card acceso-card">
-      <span class="acceso-icono">&#128170;</span>
-      <span class="ug-display acceso-label">GESTIONAR RUTINAS</span>
-    </a>
+    </div>
 
-    <a routerLink="/ejercicios" class="ug-card acceso-card">
-      <span class="acceso-icono">&#127947;</span>
-      <span class="ug-display acceso-label">CATÁLOGO EJERCICIOS</span>
-    </a>
+    <div class="ug-card seccion-card">
+      <div class="seccion-titulo-row">
+        <span class="ug-display seccion-titulo">ALERTAS</span>
+        <span
+          *ngIf="totalAlertas() > 0"
+          class="ug-badge-err badge-count"
+        >{{ totalAlertas() }}</span>
+        <span *ngIf="totalAlertas() === 0" class="ug-badge-ok">Sin alertas</span>
+      </div>
 
-  </div>
+      <div *ngIf="totalAlertas() === 0" class="estado-vacio">
+        <span class="icono-estado">&#10003;</span>
+        <p class="ug-text-apagado">Todos los clientes tienen una actividad saludable</p>
+      </div>
+
+      <div *ngIf="totalAlertas() > 0" class="tabla-card">
+        <table class="ug-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Tipo</th>
+              <th>Mensaje</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let a of alertas()"
+              [ngClass]="claseAlerta(a.tipo)"
+            >
+              <td class="celda-nombre">{{ a.nombre }}</td>
+              <td>
+                <span class="tipo-badge" [ngClass]="'tipo-' + a.tipo">
+                  {{ labelTipo(a.tipo) }}
+                </span>
+              </td>
+              <td class="celda-mensaje">{{ a.mensaje }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="accesos-grid">
+      <a routerLink="/clientes" class="ug-card acceso-card">
+        <span class="acceso-icono">&#128101;</span>
+        <span class="ug-display acceso-label">VER CLIENTES</span>
+      </a>
+      <a routerLink="/rutinas" class="ug-card acceso-card">
+        <span class="acceso-icono">&#128170;</span>
+        <span class="ug-display acceso-label">GESTIONAR RUTINAS</span>
+      </a>
+      <a routerLink="/ejercicios" class="ug-card acceso-card">
+        <span class="acceso-icono">&#127947;</span>
+        <span class="ug-display acceso-label">CATALOGO EJERCICIOS</span>
+      </a>
+      <a routerLink="/progreso" class="ug-card acceso-card">
+        <span class="acceso-icono">&#128200;</span>
+        <span class="ug-display acceso-label">PROGRESO CLIENTES</span>
+      </a>
+    </div>
+
+  </ng-container>
 
 </div>

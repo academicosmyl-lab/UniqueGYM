@@ -1,0 +1,217 @@
+<div class="progreso-page">
+
+  <div class="page-header">
+    <h1 class="ug-display">PROGRESO</h1>
+    <span *ngIf="clienteId()" class="ug-text-apagado cliente-id-label">
+      Cliente: <span class="ug-datos">{{ clienteId() }}</span>
+    </span>
+  </div>
+
+  <div *ngIf="error()" class="ug-card estado-card">
+    <span class="icono-estado">&#9888;</span>
+    <p class="ug-text-error">{{ error() }}</p>
+  </div>
+
+  <ng-container *ngIf="loading() && !error()">
+    <div class="seccion">
+      <div class="sk-titulo"></div>
+      <div class="resumen-grid">
+        <div *ngFor="let i of [1,2,3]" class="ug-card metrica-card skeleton-card">
+          <div class="sk-label"></div>
+          <div class="sk-valor"></div>
+        </div>
+      </div>
+      <div class="ug-card skeleton-card tabla-skeleton"></div>
+    </div>
+    <div class="seccion">
+      <div class="sk-titulo"></div>
+      <div class="ug-card skeleton-card tabla-skeleton"></div>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="!loading() && !error()">
+
+    <div class="seccion">
+      <div class="seccion-titulo-row">
+        <span class="seccion-titulo ug-text-apagado">COMPOSICION CORPORAL</span>
+        <span
+          *ngIf="tieneComposicion()"
+          class="ug-badge tendencia-badge"
+          [ngClass]="badgeTendencia()"
+        >{{ labelTendencia() }}</span>
+      </div>
+
+      <div *ngIf="!tieneComposicion()" class="ug-card estado-card">
+        <span class="icono-estado">&#128202;</span>
+        <p class="ug-text-apagado">Insuficientes datos para mostrar tendencias</p>
+      </div>
+
+      <ng-container *ngIf="tieneComposicion()">
+
+        <div class="resumen-grid">
+
+          <div class="ug-card metrica-card">
+            <span class="metrica-label ug-text-apagado">Pendiente Peso</span>
+            <div class="pendiente-row">
+              <span class="metrica-valor ug-datos">
+                {{ formatNum(composicion()!.peso.pendiente, 2) }}
+              </span>
+              <span class="metrica-unit ug-text-apagado">kg/semana</span>
+            </div>
+            <div class="barra-tendencia-wrap">
+              <div
+                class="barra-tendencia-fill"
+                [ngClass]="pendientePesoBadge()"
+                [style.width.%]="50"
+              ></div>
+            </div>
+          </div>
+
+          <div class="ug-card metrica-card">
+            <span class="metrica-label ug-text-apagado">Pendiente Grasa</span>
+            <div class="pendiente-row">
+              <span class="metrica-valor ug-datos">
+                {{ formatNum(composicion()!.grasa.pendiente, 2) }}
+              </span>
+              <span class="metrica-unit ug-text-apagado">%/semana</span>
+            </div>
+            <div class="barra-tendencia-wrap">
+              <div
+                class="barra-tendencia-fill"
+                [ngClass]="pendienteGrasaBadge()"
+                [style.width.%]="50"
+              ></div>
+            </div>
+          </div>
+
+          <div class="ug-card metrica-card">
+            <span class="metrica-label ug-text-apagado">Puntos de datos</span>
+            <span class="metrica-valor ug-datos ug-text-verde">
+              {{ composicion()!.labels.length }}
+            </span>
+            <span class="metrica-unit ug-text-apagado">mediciones</span>
+          </div>
+
+        </div>
+
+        <div class="ug-card tabla-card">
+          <div class="tabla-header-row">
+            <span class="ug-text-apagado tabla-subtitulo">Peso corporal</span>
+            <span class="ug-text-apagado tabla-subtitulo-unit">kg</span>
+          </div>
+          <table class="ug-table">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th class="th-num">Valor</th>
+                <th class="th-num">Suavizado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let f of filasPeso()">
+                <td><span class="fecha-cell">{{ formatFecha(f.label) }}</span></td>
+                <td class="ug-datos celda-num">{{ formatNum(f.valor) }}</td>
+                <td class="celda-num celda-suavizado">{{ formatNum(f.suavizado) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="ug-card tabla-card">
+          <div class="tabla-header-row">
+            <span class="ug-text-apagado tabla-subtitulo">% Grasa corporal</span>
+            <span class="ug-text-apagado tabla-subtitulo-unit">%</span>
+          </div>
+          <table class="ug-table">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th class="th-num">Valor</th>
+                <th class="th-num">Suavizado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let f of filasGrasa()">
+                <td><span class="fecha-cell">{{ formatFecha(f.label) }}</span></td>
+                <td class="ug-datos celda-num">{{ formatNum(f.valor) }}%</td>
+                <td class="celda-num celda-suavizado">{{ formatNum(f.suavizado) }}%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </ng-container>
+    </div>
+
+    <div class="seccion">
+      <div class="seccion-titulo-row">
+        <span class="seccion-titulo ug-text-apagado">ENTRENAMIENTO</span>
+      </div>
+
+      <div *ngIf="!tieneEntrenamiento()" class="ug-card estado-card">
+        <span class="icono-estado">&#128170;</span>
+        <p class="ug-text-apagado">Insuficientes datos para mostrar tendencias</p>
+      </div>
+
+      <ng-container *ngIf="tieneEntrenamiento()">
+
+        <div class="ug-card metrica-card adherencia-card">
+          <span class="metrica-label ug-text-apagado">ADHERENCIA AL PLAN</span>
+          <span class="adherencia-valor ug-datos ug-text-verde">
+            {{ formatNum(entrenamiento()!.adherencia, 1) }}%
+          </span>
+          <div class="barra-wrap">
+            <div
+              class="barra-fill"
+              [ngClass]="claseAdherencia()"
+              [style.width.%]="adherenciaPct()"
+            ></div>
+          </div>
+        </div>
+
+        <div *ngIf="barrasVolumen().length > 0" class="ug-card volumen-card">
+          <span class="seccion-subtitulo ug-text-apagado">VOLUMEN POR SESION</span>
+          <div class="barras-volumen">
+            <div *ngFor="let b of barrasVolumen()" class="barra-item">
+              <div class="barra-col-wrap">
+                <div class="barra-col-fill" [style.height.%]="b.pct"></div>
+              </div>
+              <span class="barra-label ug-text-apagado">{{ formatFecha(b.label) }}</span>
+              <span class="barra-num ug-datos">{{ formatNum(b.valor, 0) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="entrenamiento()!.records.length > 0" class="ug-card tabla-card">
+          <span class="seccion-subtitulo ug-text-apagado">RECORDS POR EJERCICIO</span>
+          <table class="ug-table">
+            <thead>
+              <tr>
+                <th>Ejercicio</th>
+                <th class="th-num">Peso max (kg)</th>
+                <th class="th-num">Reps</th>
+                <th>Fecha</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let r of entrenamiento()!.records">
+                <td class="celda-ejercicio">{{ r.ejercicio }}</td>
+                <td class="ug-datos celda-num">{{ formatNum(r.peso) }}</td>
+                <td class="ug-datos celda-num">{{ r.reps }}</td>
+                <td><span class="fecha-cell">{{ formatFechaRecord(r.fecha) }}</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div *ngIf="entrenamiento()!.records.length === 0" class="ug-card estado-card">
+          <span class="icono-estado">&#127947;</span>
+          <p class="ug-text-apagado">Aun no hay records registrados para este cliente</p>
+        </div>
+
+      </ng-container>
+    </div>
+
+  </ng-container>
+
+</div>

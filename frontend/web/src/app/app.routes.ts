@@ -59,6 +59,14 @@ export const routes: Routes = [
             (m) => m.NutricionComponent
           ),
       },
+      {
+        path: 'progreso',
+        canActivate: [roleGuard(['ADMIN', 'ENTRENADOR'])],
+        loadComponent: () =>
+          import('./features/progreso/progreso.component').then(
+            (m) => m.ProgresoComponent
+          ),
+      },
     ],
   },
   { path: '**', redirectTo: 'login' },
