@@ -58,7 +58,7 @@ CREATE TABLE exercises (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   gym_id UUID NOT NULL REFERENCES gyms(id) ON DELETE CASCADE,
   nombre VARCHAR(120) NOT NULL, descripcion TEXT, instrucciones TEXT,
-  video_url TEXT, thumbnail_url TEXT,
+  video_url TEXT, thumbnail_url TEXT, gif_url TEXT,
   equipment_id UUID REFERENCES equipment(id) ON DELETE SET NULL,
   dificultad difficulty DEFAULT 'INTERMEDIO', es_publico BOOLEAN NOT NULL DEFAULT true,
   created_by UUID REFERENCES users(id) ON DELETE SET NULL,
