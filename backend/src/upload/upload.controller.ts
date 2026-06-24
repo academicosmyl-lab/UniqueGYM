@@ -47,11 +47,21 @@ export class UploadController {
       throw new BadRequestException('No se recibió ningún archivo');
     }
 
-    cloudinary.config({
-      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-      api_key: process.env.CLOUDINARY_API_KEY,
-      api_secret: process.env.CLOUDINARY_API_SECRET,
-    });
+    const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+    const apiKey = process.env.CLOUDINARY_API_KEY;
+    const apiSecret = process.env.CLOUDINARY_API_SECRET;
+
+    if (!cloudName || !apiKey || !apiSecret) {
+      throw new InternalServerErrorException(
+        `Cloudinary no configurado. Faltan: ${[
+          !cloudName && 'CLOUDINARY_CLOUD_NAME',
+          !apiKey && 'CLOUDINARY_API_KEY',
+          !apiSecret && 'CLOUDINARY_API_SECRET',
+        ].filter(Boolean).join(', ')}`,
+      );
+    }
+
+    cloudinary.config({ cloud_name: cloudName, api_key: apiKey, api_secret: apiSecret });
 
     const url = await new Promise<string>((resolve, reject) => {
       cloudinary.uploader
@@ -59,9 +69,9 @@ export class UploadController {
           { folder: 'unique-gym/exercises', resource_type: 'image' },
           (error, result) => {
             if (error || !result) {
-              return reject(
-                error ?? new InternalServerErrorException('Error al subir a Cloudinary'),
-              );
+              return reject(new InternalServerErrorException(
+                `Cloudinary error: ${error?.message ?? 'sin respuesta'}`,
+              ));
             }
             resolve(result.secure_url);
           },
