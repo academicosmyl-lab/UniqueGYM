@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { AuthService } from '../../core/services/auth.service';
 
 export interface Cliente {
   id: string;
@@ -12,7 +13,7 @@ export interface Cliente {
   apellidos: string;
   email: string;
   activo: boolean;
-  objetivo: 'PERDER_GRASA' | 'GANAR_MUSCULO' | 'MANTENER' | 'RECOMPOSICION' | string;
+  objetivo: 'PERDER_PESO' | 'GANAR_MASA' | 'MANTENER' | 'RENDIMIENTO' | string;
   avatar_url?: string;
 }
 
@@ -41,6 +42,7 @@ export interface NuevoCliente {
 export class ClientesComponent implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
+  private readonly auth = inject(AuthService);
   private readonly API = 'https://uniquegym.onrender.com/api/v1';
 
   clientes = signal<Cliente[]>([]);
@@ -140,7 +142,7 @@ export class ClientesComponent implements OnInit {
     this.errorCrear.set(null);
 
     const payload = {
-      gym_id: null,
+      gym_id: this.auth.currentUser()?.gymId,
       role: 'CLIENTE',
       nombres: this.nuevoCliente.nombres,
       apellidos: this.nuevoCliente.apellidos,
@@ -214,20 +216,20 @@ export class ClientesComponent implements OnInit {
 
   badgeObjetivo(objetivo: string): string {
     const map: Record<string, string> = {
-      PERDER_GRASA: 'ug-badge-warn',
-      GANAR_MUSCULO: 'ug-badge-ok',
+      PERDER_PESO: 'ug-badge-warn',
+      GANAR_MASA: 'ug-badge-ok',
       MANTENER: 'ug-badge-info',
-      RECOMPOSICION: 'ug-badge-err',
+      RENDIMIENTO: 'ug-badge-err',
     };
     return map[objetivo] ?? 'ug-badge-info';
   }
 
   labelObjetivo(objetivo: string): string {
     const map: Record<string, string> = {
-      PERDER_GRASA: 'PERDER GRASA',
-      GANAR_MUSCULO: 'GANAR MUSCULO',
+      PERDER_PESO: 'PERDER PESO',
+      GANAR_MASA: 'GANAR MASA',
       MANTENER: 'MANTENER',
-      RECOMPOSICION: 'RECOMPOSICION',
+      RENDIMIENTO: 'RENDIMIENTO',
     };
     return map[objetivo] ?? objetivo ?? '—';
   }

@@ -25,7 +25,7 @@ export class AuthService {
             id: res.user.id,
             nombres: res.user.nombres,
             role: res.user.role as StoredUser['role'],
-            gymId: '',
+            gymId: res.user.gymId,
             access_token: res.access_token,
           };
           localStorage.setItem(STORAGE_KEY, JSON.stringify(stored));

@@ -4,6 +4,7 @@ export interface LoginResponse {
     id: string;
     nombres: string;
     role: string;
+    gymId: string;
   };
 }
 
