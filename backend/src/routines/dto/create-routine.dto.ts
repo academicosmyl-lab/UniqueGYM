@@ -1,6 +1,5 @@
 import { Type } from 'class-transformer';
 import {
-  ArrayMinSize,
   IsArray,
   IsBoolean,
   IsInt,
@@ -37,9 +36,9 @@ export class CreateRoutineDto {
   @IsUUID()
   cliente_id?: string;
 
+  @IsOptional()
   @IsArray()
-  @ArrayMinSize(1)
   @ValidateNested({ each: true })
   @Type(() => CreateRoutineDayDto)
-  days: CreateRoutineDayDto[];
+  days?: CreateRoutineDayDto[];
 }

@@ -1,52 +1,54 @@
 <div class="rutinas-page">
 
-  <!-- Cabecera -->
   <div class="page-header">
     <h1 class="ug-display">RUTINAS</h1>
     <button class="ug-btn-primary" (click)="openCreate()">+ NUEVA RUTINA</button>
   </div>
 
-  <!-- Loading -->
-  <div *ngIf="loading()" class="ug-card" style="text-align:center; padding: var(--ug-2xl);">
+  <div *ngIf="loading()" class="ug-card" style="text-align:center;padding:var(--ug-2xl);">
     <span class="ug-text-apagado">Cargando rutinas...</span>
   </div>
 
-  <!-- Estado vacío -->
   <div *ngIf="!loading() && rutinas().length === 0" class="ug-card estado-vacio">
     <span class="vacio-icono">&#128170;</span>
     <p class="ug-display vacio-titulo">SIN RUTINAS</p>
-    <p class="ug-text-apagado">No hay rutinas creadas aún. ¡Crea la primera!</p>
+    <p class="ug-text-apagado">Crea tu primera rutina y asígnala a un cliente.</p>
+    <button class="ug-btn-primary" (click)="openCreate()">+ CREAR PRIMERA RUTINA</button>
   </div>
 
-  <!-- Tabla -->
   <div *ngIf="!loading() && rutinas().length > 0" class="ug-card tabla-card">
     <table class="ug-table">
       <thead>
         <tr>
           <th>Nombre</th>
-          <th>Objetivo</th>
+          <th>Cliente</th>
+          <th>Días</th>
           <th>Semanas</th>
-          <th>Plantilla</th>
           <th>Estado</th>
           <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let r of rutinas()">
-          <td><strong>{{ r.nombre }}</strong></td>
-          <td><span class="ug-text-apagado">{{ r.objetivo || '—' }}</span></td>
-          <td><span class="ug-chip">{{ r.semanas }} sem.</span></td>
           <td>
-            <span *ngIf="r.es_plantilla" class="ug-badge-info">SÍ</span>
-            <span *ngIf="!r.es_plantilla" class="ug-text-apagado" style="font-size:12px;">NO</span>
+            <strong>{{ r.nombre }}</strong>
+            <span *ngIf="r.objetivo" class="ug-text-apagado" style="font-size:11px;display:block;">{{ r.objetivo }}</span>
           </td>
+          <td>
+            <span *ngIf="r.es_plantilla" class="ug-badge-info">PLANTILLA</span>
+            <span *ngIf="!r.es_plantilla">{{ clienteNombre(r.cliente_id) }}</span>
+          </td>
+          <td>
+            <span class="ug-chip">{{ diasAsignados(r.days) }}</span>
+          </td>
+          <td>{{ r.semanas }} sem.</td>
           <td>
             <span *ngIf="r.activa" class="ug-badge-ok">ACTIVA</span>
             <span *ngIf="!r.activa" class="ug-badge-err">INACTIVA</span>
           </td>
           <td class="acciones-cell">
-            <button class="ug-btn-ghost ug-btn-sm" (click)="openEdit(r)">Editar</button>
-            <button class="ug-btn-danger ug-btn-sm" (click)="deleteRoutine(r.id)">Eliminar</button>
+            <button class="ug-btn-primary ug-btn-sm" (click)="abrirConstructor(r.id)">Construir</button>
+            <button class="ug-btn-danger ug-btn-sm" (click)="eliminar(r.id)">Eliminar</button>
           </td>
         </tr>
       </tbody>
@@ -55,84 +57,54 @@
 
 </div>
 
-<!-- Modal crear/editar -->
+<!-- Modal: crear rutina -->
 <div *ngIf="showModal()" class="modal-overlay" (click)="closeModal()">
   <div class="modal-panel ug-card" (click)="$event.stopPropagation()">
 
     <div class="modal-header">
-      <h2 class="ug-display modal-titulo">{{ modalTitulo }}</h2>
+      <h2 class="ug-display modal-titulo">NUEVA RUTINA</h2>
       <button class="ug-btn-ghost ug-btn-sm" (click)="closeModal()">&#10005;</button>
     </div>
 
-    <div *ngIf="errorMsg()" class="error-msg">
-      {{ errorMsg() }}
-    </div>
+    <p class="ug-text-apagado" style="font-size:12px;margin-bottom:var(--ug-md);">
+      Después de crear la rutina podrás agregar días y ejercicios desde el constructor.
+    </p>
 
-    <form class="modal-form" (ngSubmit)="saveRoutine()">
+    <div *ngIf="errorMsg()" class="error-msg">{{ errorMsg() }}</div>
+
+    <form class="modal-form" (ngSubmit)="crear()">
 
       <div class="campo">
         <label class="campo-label">Nombre *</label>
-        <input
-          class="ug-input"
-          type="text"
-          [(ngModel)]="form.nombre"
-          name="nombre"
-          placeholder="Ej. Rutina Fuerza 3x Semana"
-          required
-        />
+        <input class="ug-input" type="text" [(ngModel)]="form.nombre" name="nombre"
+               placeholder="Ej. Fuerza 3x Semana" required />
       </div>
 
       <div class="campo">
         <label class="campo-label">Objetivo</label>
-        <input
-          class="ug-input"
-          type="text"
-          [(ngModel)]="form.objetivo"
-          name="objetivo"
-          placeholder="Ej. Fuerza, Hipertrofia, Resistencia..."
-        />
+        <input class="ug-input" type="text" [(ngModel)]="form.objetivo" name="objetivo"
+               placeholder="Ej. Hipertrofia, Fuerza, Resistencia..." />
       </div>
 
       <div class="campo">
         <label class="campo-label">Semanas</label>
-        <input
-          class="ug-input"
-          type="number"
-          [(ngModel)]="form.semanas"
-          name="semanas"
-          min="1"
-          max="52"
-        />
+        <input class="ug-input" type="number" [(ngModel)]="form.semanas" name="semanas" min="1" max="52" />
       </div>
 
-      <div class="campo campo-toggle">
-        <label class="campo-label">¿Es plantilla?</label>
-        <label class="toggle">
-          <input type="checkbox" [(ngModel)]="form.es_plantilla" name="es_plantilla" />
-          <span class="toggle-track">
-            <span class="toggle-thumb"></span>
-          </span>
-        </label>
+      <div class="campo">
+        <label class="campo-label">Cliente asignado</label>
+        <select class="ug-select" [(ngModel)]="form.cliente_id" name="cliente_id">
+          <option value="">Sin cliente (plantilla)</option>
+          <option *ngFor="let c of clientes()" [value]="c.id">{{ c.nombre }} {{ c.apellido }}</option>
+        </select>
       </div>
-
-      <div class="campo" *ngIf="!form.es_plantilla">
-        <label class="campo-label">ID de cliente (opcional)</label>
-        <input
-          class="ug-input"
-          type="text"
-          [(ngModel)]="form.cliente_id"
-          name="cliente_id"
-          placeholder="UUID del cliente asignado"
-        />
-      </div>
-
-      <p class="ug-text-apagado nota-modal">
-        Los días y ejercicios de la rutina se agregan después de crearla
-      </p>
 
       <div class="modal-footer">
         <button type="button" class="ug-btn-ghost" (click)="closeModal()">CANCELAR</button>
-        <button type="submit" class="ug-btn-primary">GUARDAR</button>
+        <button type="submit" class="ug-btn-primary" [disabled]="guardando()">
+          <span *ngIf="guardando()">Creando...</span>
+          <span *ngIf="!guardando()">CREAR Y CONSTRUIR &#8594;</span>
+        </button>
       </div>
 
     </form>

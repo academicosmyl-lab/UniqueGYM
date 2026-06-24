@@ -1,0 +1,344 @@
+<div class="builder-page">
+
+  <!-- Loading -->
+  <div *ngIf="loading()" class="builder-loading">
+    <span class="ug-text-apagado">Cargando rutina...</span>
+  </div>
+
+  <!-- Error global -->
+  <div *ngIf="!loading() && errorGlobal()" class="ug-card" style="text-align:center;padding:var(--ug-2xl);">
+    <p class="ug-text-apagado">{{ errorGlobal() }}</p>
+    <button class="ug-btn-ghost" (click)="volver()">&#8592; Volver</button>
+  </div>
+
+  <!-- Contenido principal -->
+  <ng-container *ngIf="!loading() && rutina()">
+
+    <!-- Cabecera -->
+    <div class="builder-header ug-card">
+      <button class="ug-btn-ghost ug-btn-sm btn-back" (click)="volver()">&#8592; Rutinas</button>
+      <div class="header-info">
+        <div class="header-nombre">
+          <h1 class="ug-display">{{ rutina()!.nombre }}</h1>
+          <span *ngIf="rutina()!.activa" class="ug-badge-ok">ACTIVA</span>
+          <span *ngIf="!rutina()!.activa" class="ug-badge-err">INACTIVA</span>
+        </div>
+        <div class="header-meta">
+          <span class="meta-item">
+            <span class="meta-label">CLIENTE</span>
+            <span>{{ clienteNombre(rutina()!.cliente_id) }}</span>
+          </span>
+          <span class="meta-sep">·</span>
+          <span class="meta-item">
+            <span class="meta-label">OBJETIVO</span>
+            <span>{{ rutina()!.objetivo || '—' }}</span>
+          </span>
+          <span class="meta-sep">·</span>
+          <span class="meta-item">
+            <span class="meta-label">SEMANAS</span>
+            <span>{{ rutina()!.semanas }}</span>
+          </span>
+        </div>
+      </div>
+      <button class="ug-btn-ghost ug-btn-sm" (click)="openInfoModal()">&#9998; Editar info</button>
+    </div>
+
+    <!-- Días -->
+    <div class="dias-header">
+      <h2 class="ug-display section-title">DÍAS DE ENTRENAMIENTO</h2>
+      <button class="ug-btn-primary" (click)="openDayModal()">+ Añadir día</button>
+    </div>
+
+    <!-- Sin días -->
+    <div *ngIf="rutina()!.days.length === 0" class="ug-card estado-vacio">
+      <span style="font-size:48px;">&#128197;</span>
+      <p class="ug-display" style="font-size:18px;color:var(--ug-apagado);">SIN DÍAS CONFIGURADOS</p>
+      <p class="ug-text-apagado">Añade el primer día de entrenamiento para empezar.</p>
+      <button class="ug-btn-primary" (click)="openDayModal()">+ Añadir primer día</button>
+    </div>
+
+    <!-- Tarjetas de días -->
+    <div class="dias-grid">
+      <div *ngFor="let day of rutina()!.days" class="dia-card ug-card">
+
+        <!-- Header del día -->
+        <div class="dia-header">
+          <div class="dia-title-group">
+            <span class="dia-badge">{{ diaLabel(day.dia_semana) }}</span>
+            <h3 class="ug-display dia-nombre">{{ day.nombre }}</h3>
+          </div>
+          <button class="ug-btn-danger ug-btn-sm" (click)="removeDay(day.id)">&#128465; Eliminar día</button>
+        </div>
+
+        <!-- Tabla de ejercicios -->
+        <div *ngIf="day.exercises.length > 0" class="ejercicios-tabla">
+          <table class="ug-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Ejercicio</th>
+                <th>Series</th>
+                <th>Reps</th>
+                <th>Descanso</th>
+                <th>Peso</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let ex of day.exercises; let i = index">
+                <td><span class="ug-text-apagado" style="font-size:12px;">{{ i + 1 }}</span></td>
+                <td>
+                  <div class="ex-cell">
+                    <img *ngIf="ex.exercise?.gif_url" [src]="ex.exercise.gif_url!" class="ex-thumb" [alt]="ex.exercise.nombre" />
+                    <span *ngIf="!ex.exercise?.gif_url" class="ex-thumb-ph">&#127947;</span>
+                    <strong>{{ ex.exercise?.nombre ?? '—' }}</strong>
+                  </div>
+                </td>
+                <td>{{ ex.series }}</td>
+                <td>
+                  <span *ngIf="ex.reps_min || ex.reps_max">{{ ex.reps_min ?? '?' }} – {{ ex.reps_max ?? '?' }}</span>
+                  <span *ngIf="!ex.reps_min && !ex.reps_max" class="ug-text-apagado">—</span>
+                </td>
+                <td>{{ ex.descanso_seg }}s</td>
+                <td>
+                  <span *ngIf="ex.peso_sugerido">~{{ ex.peso_sugerido }} kg</span>
+                  <span *ngIf="!ex.peso_sugerido" class="ug-text-apagado">—</span>
+                </td>
+                <td>
+                  <button class="btn-quitar" (click)="removeEx(day.id, ex.id)" title="Quitar ejercicio">&#10005;</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div *ngIf="day.exercises.length === 0" class="sin-ejercicios">
+          <span class="ug-text-apagado">Sin ejercicios en este día</span>
+        </div>
+
+        <!-- Botón agregar ejercicio al día -->
+        <div class="dia-footer">
+          <button class="ug-btn-ghost ug-btn-sm" (click)="openExModal(day.id)">+ Agregar ejercicio</button>
+          <span class="ug-text-apagado count-label">{{ day.exercises.length }} ejercicio(s)</span>
+        </div>
+
+      </div>
+    </div>
+
+  </ng-container>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     MODAL: Editar info de la rutina
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<div *ngIf="showInfoModal()" class="modal-overlay" (click)="showInfoModal.set(false)">
+  <div class="modal-panel ug-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="ug-display modal-titulo">EDITAR RUTINA</h2>
+      <button class="ug-btn-ghost ug-btn-sm" (click)="showInfoModal.set(false)">&#10005;</button>
+    </div>
+    <div *ngIf="errorInfo()" class="error-msg">{{ errorInfo() }}</div>
+    <form class="modal-form" (ngSubmit)="saveInfo()">
+      <div class="campo">
+        <label class="campo-label">Nombre *</label>
+        <input class="ug-input" type="text" [(ngModel)]="infoForm.nombre" name="nombre" required />
+      </div>
+      <div class="campo">
+        <label class="campo-label">Objetivo</label>
+        <input class="ug-input" type="text" [(ngModel)]="infoForm.objetivo" name="objetivo" placeholder="Hipertrofia, Fuerza..." />
+      </div>
+      <div class="campo">
+        <label class="campo-label">Semanas</label>
+        <input class="ug-input" type="number" [(ngModel)]="infoForm.semanas" name="semanas" min="1" max="52" />
+      </div>
+      <div class="campo">
+        <label class="campo-label">Cliente</label>
+        <select class="ug-select" [(ngModel)]="infoForm.cliente_id" name="cliente_id">
+          <option value="">Sin cliente (plantilla)</option>
+          <option *ngFor="let c of clientes()" [value]="c.id">{{ c.nombre }} {{ c.apellido }}</option>
+        </select>
+      </div>
+      <div class="campo campo-inline">
+        <label class="campo-label">¿Rutina activa?</label>
+        <input type="checkbox" [(ngModel)]="infoForm.activa" name="activa" class="checkbox-verde" />
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="ug-btn-ghost" (click)="showInfoModal.set(false)">CANCELAR</button>
+        <button type="submit" class="ug-btn-primary" [disabled]="guardandoInfo()">GUARDAR</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     MODAL: Añadir día
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<div *ngIf="showDayModal()" class="modal-overlay" (click)="showDayModal.set(false)">
+  <div class="modal-panel modal-wide ug-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="ug-display modal-titulo">AÑADIR DÍA</h2>
+      <button class="ug-btn-ghost ug-btn-sm" (click)="showDayModal.set(false)">&#10005;</button>
+    </div>
+    <div *ngIf="errorDia()" class="error-msg">{{ errorDia() }}</div>
+    <form class="modal-form" (ngSubmit)="saveDay()">
+
+      <div class="campos-row">
+        <div class="campo">
+          <label class="campo-label">Día de la semana</label>
+          <select class="ug-select" [(ngModel)]="dayForm.dia_semana" name="dia_semana">
+            <option *ngFor="let d of diasSemana" [value]="d.value">{{ d.label }}</option>
+          </select>
+        </div>
+        <div class="campo flex-1">
+          <label class="campo-label">Nombre del día *</label>
+          <input class="ug-input" type="text" [(ngModel)]="dayForm.nombre" name="nombre"
+                 placeholder="Ej. Tren Superior, Pecho y Tríceps..." required />
+        </div>
+      </div>
+
+      <!-- Buscador de ejercicios -->
+      <div class="campo">
+        <label class="campo-label">Buscar y agregar ejercicios</label>
+        <input class="ug-input" type="text" [(ngModel)]="daySearchText" name="daySearch"
+               placeholder="Escribe el nombre del ejercicio..." autocomplete="off" />
+        <div *ngIf="daySearchText && ejerciciosFiltrados().length > 0" class="ex-dropdown">
+          <div
+            *ngFor="let e of ejerciciosFiltrados() | slice:0:8"
+            class="ex-option"
+            (click)="addExToDayForm(e)"
+          >
+            <span>{{ e.nombre }}</span>
+            <span class="ug-text-apagado" style="font-size:11px;">{{ e.dificultad }}</span>
+          </div>
+        </div>
+        <p *ngIf="daySearchText && ejerciciosFiltrados().length === 0" class="ug-text-apagado" style="font-size:12px;margin-top:4px;">
+          Sin resultados
+        </p>
+      </div>
+
+      <!-- Lista de ejercicios del día -->
+      <div *ngIf="dayExercises.length > 0" class="day-exercises-list">
+        <label class="campo-label">Ejercicios del día ({{ dayExercises.length }})</label>
+        <div *ngFor="let de of dayExercises; let i = index" class="day-ex-row">
+          <div class="day-ex-nombre">
+            <strong>{{ i + 1 }}. {{ de.exercise.nombre }}</strong>
+          </div>
+          <div class="day-ex-params">
+            <div class="param-group">
+              <label>Series</label>
+              <input class="ug-input param-input" type="number" [(ngModel)]="de.series" [name]="'s'+i" min="1" />
+            </div>
+            <div class="param-group">
+              <label>Rep. mín</label>
+              <input class="ug-input param-input" type="number" [(ngModel)]="de.reps_min" [name]="'rmin'+i" min="1" />
+            </div>
+            <div class="param-group">
+              <label>Rep. máx</label>
+              <input class="ug-input param-input" type="number" [(ngModel)]="de.reps_max" [name]="'rmax'+i" min="1" />
+            </div>
+            <div class="param-group">
+              <label>Descanso</label>
+              <input class="ug-input param-input" type="number" [(ngModel)]="de.descanso_seg" [name]="'d'+i" min="0" />
+            </div>
+            <div class="param-group">
+              <label>Peso kg</label>
+              <input class="ug-input param-input" type="number" [(ngModel)]="de.peso_sugerido" [name]="'p'+i" min="0" />
+            </div>
+          </div>
+          <button type="button" class="btn-quitar" (click)="removeExFromDayForm(i)" title="Quitar">&#10005;</button>
+        </div>
+      </div>
+
+      <p *ngIf="dayExercises.length === 0" class="ug-text-apagado" style="font-size:12px;">
+        Busca y selecciona al menos un ejercicio para este día.
+      </p>
+
+      <div class="modal-footer">
+        <button type="button" class="ug-btn-ghost" (click)="showDayModal.set(false)">CANCELAR</button>
+        <button type="submit" class="ug-btn-primary" [disabled]="guardandoDia()">
+          <span *ngIf="guardandoDia()">Guardando...</span>
+          <span *ngIf="!guardandoDia()">GUARDAR DÍA</span>
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     MODAL: Agregar ejercicio a día existente
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<div *ngIf="showExModal()" class="modal-overlay" (click)="showExModal.set(false)">
+  <div class="modal-panel ug-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="ug-display modal-titulo">AGREGAR EJERCICIO</h2>
+      <button class="ug-btn-ghost ug-btn-sm" (click)="showExModal.set(false)">&#10005;</button>
+    </div>
+    <div *ngIf="errorEx()" class="error-msg">{{ errorEx() }}</div>
+    <form class="modal-form" (ngSubmit)="saveEx()">
+
+      <div class="campo">
+        <label class="campo-label">Ejercicio *</label>
+        <div *ngIf="exSelectedEx" class="ex-selected-badge">
+          <strong>{{ exSelectedEx.nombre }}</strong>
+          <button type="button" class="btn-quitar" (click)="exSelectedEx = null">&#10005;</button>
+        </div>
+        <div *ngIf="!exSelectedEx">
+          <input class="ug-input" type="text" [(ngModel)]="exSearchText" name="exSearch"
+                 placeholder="Buscar ejercicio..." autocomplete="off" />
+          <div *ngIf="exSearchText && exFiltrados().length > 0" class="ex-dropdown">
+            <div
+              *ngFor="let e of exFiltrados() | slice:0:8"
+              class="ex-option"
+              (click)="selectEx(e)"
+            >
+              <span>{{ e.nombre }}</span>
+              <span class="ug-text-apagado" style="font-size:11px;">{{ e.dificultad }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="campos-row">
+        <div class="campo">
+          <label class="campo-label">Series</label>
+          <input class="ug-input" type="number" [(ngModel)]="exForm.series" name="series" min="1" />
+        </div>
+        <div class="campo">
+          <label class="campo-label">Rep. mín</label>
+          <input class="ug-input" type="number" [(ngModel)]="exForm.reps_min" name="reps_min" min="1" />
+        </div>
+        <div class="campo">
+          <label class="campo-label">Rep. máx</label>
+          <input class="ug-input" type="number" [(ngModel)]="exForm.reps_max" name="reps_max" min="1" />
+        </div>
+      </div>
+
+      <div class="campos-row">
+        <div class="campo">
+          <label class="campo-label">Descanso (seg)</label>
+          <input class="ug-input" type="number" [(ngModel)]="exForm.descanso_seg" name="descanso" min="0" />
+        </div>
+        <div class="campo">
+          <label class="campo-label">Peso sugerido (kg)</label>
+          <input class="ug-input" type="number" [(ngModel)]="exForm.peso_sugerido" name="peso" min="0" />
+        </div>
+      </div>
+
+      <div class="campo">
+        <label class="campo-label">Notas</label>
+        <input class="ug-input" type="text" [(ngModel)]="exForm.notas" name="notas" placeholder="Instrucción especial (opcional)" />
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="ug-btn-ghost" (click)="showExModal.set(false)">CANCELAR</button>
+        <button type="submit" class="ug-btn-primary" [disabled]="guardandoEx()">
+          <span *ngIf="guardandoEx()">Añadiendo...</span>
+          <span *ngIf="!guardandoEx()">AÑADIR</span>
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

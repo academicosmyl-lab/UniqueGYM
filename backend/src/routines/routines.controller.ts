@@ -21,6 +21,7 @@ import { RoutinesService } from './routines.service';
 import { CreateRoutineDto } from './dto/create-routine.dto';
 import { UpdateRoutineDto } from './dto/update-routine.dto';
 import { CreateRoutineDayDto } from './dto/create-routine-day.dto';
+import { CreateRoutineExerciseDto } from './dto/create-routine-exercise.dto';
 import { FindRoutinesDto } from './dto/find-routines.dto';
 
 interface RequestUser {
@@ -119,5 +120,41 @@ export class RoutinesController {
     @CurrentUser() user: RequestUser,
   ) {
     await this.routinesService.removeDay(routineId, dayId, user.gymId);
+  }
+
+  // POST /routines/:routineId/days/:dayId/exercises
+  @Post(':routineId/days/:dayId/exercises')
+  @Roles(UserRole.ADMIN, UserRole.ENTRENADOR)
+  async addExercise(
+    @Param('routineId', ParseUUIDPipe) routineId: string,
+    @Param('dayId', ParseUUIDPipe) dayId: string,
+    @Body() dto: CreateRoutineExerciseDto,
+    @CurrentUser() user: RequestUser,
+  ) {
+    const ex = await this.routinesService.addExerciseToDay(
+      routineId,
+      dayId,
+      dto,
+      user.gymId,
+    );
+    return { data: ex };
+  }
+
+  // DELETE /routines/:routineId/days/:dayId/exercises/:exerciseId
+  @Delete(':routineId/days/:dayId/exercises/:exerciseId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Roles(UserRole.ADMIN, UserRole.ENTRENADOR)
+  async removeExercise(
+    @Param('routineId', ParseUUIDPipe) routineId: string,
+    @Param('dayId', ParseUUIDPipe) dayId: string,
+    @Param('exerciseId', ParseUUIDPipe) exerciseId: string,
+    @CurrentUser() user: RequestUser,
+  ) {
+    await this.routinesService.removeExerciseFromDay(
+      routineId,
+      dayId,
+      exerciseId,
+      user.gymId,
+    );
   }
 }

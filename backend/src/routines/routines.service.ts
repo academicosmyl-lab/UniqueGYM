@@ -11,6 +11,7 @@ import { RoutineExercise } from './entities/routine-exercise.entity';
 import { CreateRoutineDto } from './dto/create-routine.dto';
 import { UpdateRoutineDto } from './dto/update-routine.dto';
 import { CreateRoutineDayDto } from './dto/create-routine-day.dto';
+import { CreateRoutineExerciseDto } from './dto/create-routine-exercise.dto';
 import { FindRoutinesDto } from './dto/find-routines.dto';
 
 @Injectable()
@@ -22,6 +23,9 @@ export class RoutinesService {
     @InjectRepository(RoutineDay)
     private readonly dayRepo: Repository<RoutineDay>,
 
+    @InjectRepository(RoutineExercise)
+    private readonly exerciseRepo: Repository<RoutineExercise>,
+
     private readonly dataSource: DataSource,
   ) {}
 
@@ -29,11 +33,7 @@ export class RoutinesService {
   // Domain validations (calculos.md §3)
   // ---------------------------------------------------------------------------
   private validateRoutineDto(dto: CreateRoutineDto): void {
-    if (!dto.days || dto.days.length < 1) {
-      throw new BadRequestException(
-        'La rutina debe tener al menos 1 día.',
-      );
-    }
+    if (!dto.days || dto.days.length === 0) return;  // days es opcional ahora
 
     for (const day of dto.days) {
       if (!day.exercises || day.exercises.length < 1) {
@@ -218,7 +218,7 @@ export class RoutinesService {
       const savedRoutine = await manager.save(Routine, newRoutine);
 
       // 2. Persist days and exercises
-      for (const dayDto of dto.days) {
+      for (const dayDto of (dto.days ?? [])) {
         const newDay = manager.create(RoutineDay, {
           routine_id: savedRoutine.id,
           nombre: dayDto.nombre,
@@ -362,5 +362,65 @@ export class RoutinesService {
     }
 
     await this.routineRepo.softDelete(id);
+  }
+
+  // ---------------------------------------------------------------------------
+  // addExerciseToDay
+  // ---------------------------------------------------------------------------
+  async addExerciseToDay(
+    routineId: string,
+    dayId: string,
+    dto: CreateRoutineExerciseDto,
+    gymId: string,
+  ): Promise<RoutineExercise> {
+    await this.findOne(routineId, gymId);
+
+    const day = await this.dayRepo.findOne({
+      where: { id: dayId, routine_id: routineId },
+    });
+    if (!day) {
+      throw new NotFoundException(`Día "${dayId}" no encontrado en la rutina.`);
+    }
+
+    if (dto.series < 1) {
+      throw new BadRequestException('series debe ser >= 1');
+    }
+
+    const ex = this.exerciseRepo.create({
+      routine_day_id: dayId,
+      exercise_id: dto.exercise_id,
+      orden: dto.orden ?? 1,
+      series: dto.series,
+      reps_min: dto.reps_min ?? null,
+      reps_max: dto.reps_max ?? null,
+      peso_sugerido: dto.peso_sugerido ?? null,
+      descanso_seg: dto.descanso_seg ?? 90,
+      notas: dto.notas ?? null,
+    });
+
+    return this.exerciseRepo.save(ex);
+  }
+
+  // ---------------------------------------------------------------------------
+  // removeExerciseFromDay
+  // ---------------------------------------------------------------------------
+  async removeExerciseFromDay(
+    routineId: string,
+    dayId: string,
+    exerciseId: string,
+    gymId: string,
+  ): Promise<void> {
+    await this.findOne(routineId, gymId);
+
+    const ex = await this.exerciseRepo.findOne({
+      where: { id: exerciseId, routine_day_id: dayId },
+    });
+    if (!ex) {
+      throw new NotFoundException(
+        `Ejercicio "${exerciseId}" no encontrado en el día "${dayId}".`,
+      );
+    }
+
+    await this.exerciseRepo.remove(ex);
   }
 }

@@ -37,6 +37,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'rutinas/:id',
+        loadComponent: () =>
+          import('./pages/rutinas/rutina-builder.component').then(
+            (m) => m.RutinaBuilderComponent
+          ),
+      },
+      {
         path: 'ejercicios',
         loadComponent: () =>
           import('./pages/ejercicios/ejercicios.component').then(
