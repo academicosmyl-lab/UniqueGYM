@@ -13,7 +13,16 @@
     <div class="slide-overlay"></div>
   </div>
 
-  <!-- ══ LANDING: solo botón + instagram ══ -->
+  <!-- Instagram top-right -->
+  <a [href]="INSTAGRAM" target="_blank" rel="noopener" class="ig-fab" [class.hidden]="showForm()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+      <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+      <circle cx="12" cy="12" r="4"/>
+      <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+    </svg>
+  </a>
+
+  <!-- ══ LANDING: solo botón ══ -->
   <div class="landing-content" [class.hidden]="showForm()">
 
     <!-- Puntos de navegación -->
@@ -514,6 +523,40 @@
 }
 
 .btn-submit:disabled { opacity: 0.55; cursor: not-allowed; }
+
+/* ══ Instagram flotante top-right ══ */
+.ig-fab {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 20;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.7);
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s, transform 0.2s, border-color 0.2s;
+}
+
+.ig-fab svg { width: 20px; height: 20px; }
+
+.ig-fab:hover {
+  background: rgba(29,222,16,0.15);
+  border-color: rgba(29,222,16,0.4);
+  color: #1DDE10;
+  transform: scale(1.1);
+}
+
+.ig-fab.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
 
 /* ══ Desktop: form lateral ══ */
 @media (min-width: 768px) {
