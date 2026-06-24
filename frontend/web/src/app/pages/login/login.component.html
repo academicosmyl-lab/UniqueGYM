@@ -19,7 +19,7 @@
     <!-- Logo -->
     <div class="ug-logo">
       <div class="logo-circle">
-        <img src="/gym-1.jpg" alt="UG" class="logo-img" onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\'logo-letra\'>U</span>'" />
+        <span class="logo-letra">U</span>
       </div>
       <div class="logo-text">
         <span class="logo-nombre">UNIQUE GYM</span>
@@ -138,21 +138,42 @@
 .slide {
   position: absolute;
   inset: 0;
-  background-size: cover;
-  background-position: center;
   opacity: 0;
   transition: opacity 1.2s ease-in-out;
-  transform: scale(1.04);
-  animation: subtle-zoom 10s ease-in-out infinite alternate;
+  overflow: hidden;
 }
 
 .slide.active {
   opacity: 1;
 }
 
+/* Capa de fondo difuminado (rellena espacio lateral) */
+.slide::before {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  background-image: inherit;
+  background-size: cover;
+  background-position: center;
+  filter: blur(22px) brightness(0.35) saturate(0.6);
+  transform: scale(1.1);
+}
+
+/* Imagen principal centrada y contenida */
+.slide::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: inherit;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  animation: subtle-zoom 12s ease-in-out infinite alternate;
+}
+
 @keyframes subtle-zoom {
-  from { transform: scale(1.04); }
-  to   { transform: scale(1.08); }
+  from { transform: scale(1.0); }
+  to   { transform: scale(1.05); }
 }
 
 .slide-overlay {

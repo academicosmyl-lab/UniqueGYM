@@ -22,12 +22,9 @@ export class LoginComponent implements OnInit, OnDestroy {
   currentSlide = signal(0);
 
   readonly slides = [
-    '/gym-1.jpg',
-    '/gym-2.jpg',
-    '/gym-3.jpg',
-    '/gym-4.jpg',
-    '/gym-5.jpg',
-    '/gym-6.jpg',
+    '/gym-1.png',
+    '/gym-2.png',
+    '/gym-3.png',
   ];
 
   readonly INSTAGRAM = 'https://www.instagram.com/uniquegymoficial/';
