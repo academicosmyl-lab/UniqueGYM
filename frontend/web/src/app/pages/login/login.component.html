@@ -1,67 +1,283 @@
-<div class="login-wrap">
-  <div class="login-card ug-card">
-    <div style="text-align:center; margin-bottom: var(--ug-2xl)">
-      <span class="ug-display" style="font-size:32px; color:var(--ug-verde)">UNIQUE GYM</span>
-      <p style="color:var(--ug-apagado); margin-top: var(--ug-sm); font-size:13px">Panel de gestion — Ingresa tus credenciales</p>
+<div class="login-bg">
+  <!-- Fondo con imagen del equipo -->
+  <div class="login-bg-img"></div>
+  <!-- Overlay degradado oscuro -->
+  <div class="login-overlay"></div>
+
+  <!-- Contenido centrado -->
+  <div class="login-content">
+
+    <!-- Logo / Marca -->
+    <div class="login-brand">
+      <span class="brand-letra">U</span>
+      <div class="brand-text">
+        <span class="brand-nombre">UNIQUE GYM</span>
+        <span class="brand-lema">FORMA TU CUERPO</span>
+      </div>
     </div>
 
-    <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
-      <div class="field">
-        <label style="color:var(--ug-apagado); font-size:12px; display:block; margin-bottom:var(--ug-xs)">Correo electronico</label>
-        <input
-          class="ug-input"
-          type="email"
-          [(ngModel)]="email"
-          name="email"
-          placeholder="correo@ejemplo.com"
-          required
-          autocomplete="email"
-        />
-      </div>
+    <!-- Card glassmorphism -->
+    <div class="login-card">
+      <h2 class="card-titulo">PANEL DE GESTIÓN</h2>
+      <p class="card-sub">Ingresa tus credenciales para continuar</p>
 
-      <div class="field">
-        <label style="color:var(--ug-apagado); font-size:12px; display:block; margin-bottom:var(--ug-xs)">Contrasena</label>
-        <input
-          class="ug-input"
-          type="password"
-          [(ngModel)]="password"
-          name="password"
-          placeholder="••••••••"
-          required
-          autocomplete="current-password"
-        />
-      </div>
+      <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+        <div class="field">
+          <label class="field-label">Correo electrónico</label>
+          <input
+            class="field-input"
+            type="email"
+            [(ngModel)]="email"
+            name="email"
+            placeholder="correo@ejemplo.com"
+            required
+            autocomplete="email"
+          />
+        </div>
 
-      @if (error()) {
-        <p class="ug-text-error" style="font-size:13px; margin-top: var(--ug-sm)">{{ error() }}</p>
-      }
+        <div class="field">
+          <label class="field-label">Contraseña</label>
+          <input
+            class="field-input"
+            type="password"
+            [(ngModel)]="password"
+            name="password"
+            placeholder="••••••••"
+            required
+            autocomplete="current-password"
+          />
+        </div>
 
-      <button
-        type="submit"
-        class="ug-btn-primary w-full"
-        style="margin-top: var(--ug-xl); width:100%"
-        [disabled]="loading()"
-      >
-        {{ loading() ? 'Ingresando...' : 'INGRESAR' }}
-      </button>
-    </form>
+        @if (error()) {
+          <p class="field-error">{{ error() }}</p>
+        }
+
+        <button
+          type="submit"
+          class="btn-ingresar"
+          [disabled]="loading()"
+        >
+          {{ loading() ? 'INGRESANDO...' : 'INGRESAR' }}
+        </button>
+      </form>
+    </div>
+
+    <p class="login-footer">Asesorías Profesionales M&amp;L · Unique Gym</p>
   </div>
 </div>
 
 <style>
-  .login-wrap {
-    min-height: 100vh;
+  /* ── Capa base ── */
+  .login-bg {
+    position: fixed;
+    inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--ug-negro);
-    padding: var(--ug-xl);
+    padding: 24px;
+    overflow: hidden;
   }
+
+  /* ── Imagen de fondo enfocada en los entrenadores (parte superior) ── */
+  .login-bg-img {
+    position: absolute;
+    inset: 0;
+    background-image: url('/gym-hero.png');
+    background-size: cover;
+    background-position: center top;
+    filter: blur(1px) brightness(0.55);
+    transform: scale(1.04);
+  }
+
+  /* ── Overlay degradado: negro arriba, verde profundo abajo ── */
+  .login-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      160deg,
+      rgba(5, 5, 5, 0.72) 0%,
+      rgba(5, 5, 5, 0.55) 40%,
+      rgba(10, 60, 10, 0.62) 100%
+    );
+  }
+
+  /* ── Contenido ── */
+  .login-content {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    width: 100%;
+    max-width: 420px;
+  }
+
+  /* ── Marca ── */
+  .login-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .brand-letra {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #1DDE10;
+    color: #050505;
+    font-size: 28px;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 24px rgba(29, 222, 16, 0.5);
+    flex-shrink: 0;
+  }
+
+  .brand-text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .brand-nombre {
+    font-size: 26px;
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: 0.1em;
+    line-height: 1;
+  }
+
+  .brand-lema {
+    font-size: 11px;
+    color: #1DDE10;
+    letter-spacing: 0.25em;
+    font-weight: 600;
+    margin-top: 3px;
+  }
+
+  /* ── Card glassmorphism ── */
   .login-card {
     width: 100%;
-    max-width: 400px;
+    background: rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
+    padding: 36px 32px;
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.45),
+      0 0 0 1px rgba(29, 222, 16, 0.08);
   }
+
+  .card-titulo {
+    font-size: 18px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 0.1em;
+    margin: 0 0 6px;
+    text-align: center;
+  }
+
+  .card-sub {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.45);
+    text-align: center;
+    margin: 0 0 28px;
+    letter-spacing: 0.03em;
+  }
+
+  /* ── Campos ── */
   .field {
-    margin-bottom: var(--ug-lg);
+    margin-bottom: 18px;
+  }
+
+  .field-label {
+    display: block;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 7px;
+    font-weight: 600;
+  }
+
+  .field-input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: #ffffff;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+    font-family: inherit;
+  }
+
+  .field-input::placeholder {
+    color: rgba(255, 255, 255, 0.25);
+  }
+
+  .field-input:focus {
+    border-color: #1DDE10;
+    box-shadow: 0 0 0 3px rgba(29, 222, 16, 0.15);
+    background: rgba(255, 255, 255, 0.11);
+  }
+
+  .field-error {
+    font-size: 12px;
+    color: #ff6b6b;
+    margin: -6px 0 14px;
+    text-align: center;
+  }
+
+  /* ── Botón ── */
+  .btn-ingresar {
+    width: 100%;
+    margin-top: 8px;
+    padding: 14px;
+    background: #1DDE10;
+    color: #050505;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+    box-shadow: 0 4px 16px rgba(29, 222, 16, 0.35);
+    font-family: inherit;
+  }
+
+  .btn-ingresar:hover:not(:disabled) {
+    background: #25f715;
+    box-shadow: 0 6px 24px rgba(29, 222, 16, 0.5);
+    transform: translateY(-1px);
+  }
+
+  .btn-ingresar:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  .btn-ingresar:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* ── Pie ── */
+  .login-footer {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.25);
+    text-align: center;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 480px) {
+    .login-card { padding: 28px 20px; border-radius: 16px; }
+    .brand-nombre { font-size: 22px; }
+    .brand-letra { width: 46px; height: 46px; font-size: 22px; }
   }
 </style>
