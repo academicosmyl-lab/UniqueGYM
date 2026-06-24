@@ -1,8 +1,207 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title class="ug-display">CUERPO</ion-title>
+    <ion-title>
+      <span class="ug-display titulo-cuerpo">CUERPO</span>
+      <span class="subtitulo-cuerpo">Composición corporal</span>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" class="btn-historial" (click)="irHistorial()">
+        <ion-icon name="time-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
-<ion-content class="ion-padding">
-  <p style="color: var(--ug-apagado)">Próximamente...</p>
+
+<ion-content>
+
+  <!-- Última medición resumen -->
+  <div class="contenido-padding">
+
+    <div class="ug-card-featured ultima-card" *ngIf="!cargandoUltima() && ultimaMedicion()">
+      <div class="ultima-encabezado">
+        <span class="ultima-etiqueta ug-display">ÚLTIMA MEDICIÓN</span>
+        <span class="ultima-fecha">{{ ultimaMedicion()!.fecha | date:'d MMM yyyy' }}</span>
+      </div>
+      <div class="metricas-grid">
+        <div class="metrica-item" *ngIf="ultimaMedicion()!.peso_kg != null">
+          <span class="metrica-valor">{{ ultimaMedicion()!.peso_kg }}</span>
+          <span class="metrica-unidad">kg</span>
+          <span class="metrica-nombre">Peso</span>
+        </div>
+        <div class="metrica-item" *ngIf="ultimaMedicion()!.grasa_pct != null">
+          <span class="metrica-valor" [ngClass]="clasifGrasa(ultimaMedicion()!.grasa_pct)">
+            {{ ultimaMedicion()!.grasa_pct }}%
+          </span>
+          <span class="metrica-nombre">Grasa</span>
+          <span class="metrica-clasif" [ngClass]="clasifGrasa(ultimaMedicion()!.grasa_pct)">
+            {{ labelGrasa(ultimaMedicion()!.grasa_pct) }}
+          </span>
+        </div>
+        <div class="metrica-item" *ngIf="ultimaMedicion()!.musculo_kg != null">
+          <span class="metrica-valor verde">{{ ultimaMedicion()!.musculo_kg }}</span>
+          <span class="metrica-unidad">kg</span>
+          <span class="metrica-nombre">Músculo</span>
+        </div>
+        <div class="metrica-item" *ngIf="ultimaMedicion()!.agua_pct != null">
+          <span class="metrica-valor azul">{{ ultimaMedicion()!.agua_pct }}%</span>
+          <span class="metrica-nombre">Agua</span>
+        </div>
+        <div class="metrica-item" *ngIf="ultimaMedicion()!.imc != null">
+          <span class="metrica-valor">{{ ultimaMedicion()!.imc }}</span>
+          <span class="metrica-nombre">IMC</span>
+        </div>
+        <div class="metrica-item" *ngIf="ultimaMedicion()!.grasa_visceral != null">
+          <span class="metrica-valor" [ngClass]="clasifVisceral(ultimaMedicion()!.grasa_visceral)">
+            {{ ultimaMedicion()!.grasa_visceral }}
+          </span>
+          <span class="metrica-nombre">Visceral</span>
+          <span class="metrica-clasif" [ngClass]="clasifVisceral(ultimaMedicion()!.grasa_visceral)">
+            {{ labelVisceral(ultimaMedicion()!.grasa_visceral) }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Skeleton última medición -->
+    <div class="ug-card skeleton-ultima" *ngIf="cargandoUltima()">
+      <ion-skeleton-text animated style="width: 50%; height: 14px; border-radius: 4px;"></ion-skeleton-text>
+      <div class="skeleton-metricas">
+        <ion-skeleton-text animated *ngFor="let i of [1,2,3,4]"
+          style="width: 60px; height: 52px; border-radius: 8px;"></ion-skeleton-text>
+      </div>
+    </div>
+
+    <!-- Sin medición previa -->
+    <div class="aviso-primera" *ngIf="!cargandoUltima() && !ultimaMedicion()">
+      <ion-icon name="body-outline"></ion-icon>
+      <p>Aún no tienes mediciones. ¡Registra la primera!</p>
+    </div>
+
+    <!-- Formulario de registro -->
+    <div class="ug-card form-card">
+      <h3 class="ug-display form-titulo">NUEVA MEDICIÓN</h3>
+      <p class="form-subtitulo">Ingresa los valores de tu pesa o medición manual</p>
+
+      <form [formGroup]="form" (ngSubmit)="guardar()">
+
+        <div class="campos-grid">
+
+          <div class="campo-grupo">
+            <label class="campo-label">Peso (kg)</label>
+            <ion-input
+              type="number"
+              formControlName="peso_kg"
+              placeholder="Ej: 72.5"
+              inputmode="decimal"
+              class="ug-input campo-input"
+              [ngClass]="{'campo-invalido': form.get('peso_kg')?.invalid && form.get('peso_kg')?.touched}"
+            ></ion-input>
+          </div>
+
+          <div class="campo-grupo">
+            <label class="campo-label">Grasa (%)</label>
+            <ion-input
+              type="number"
+              formControlName="grasa_pct"
+              placeholder="Ej: 18.5"
+              inputmode="decimal"
+              class="ug-input campo-input"
+              [ngClass]="{'campo-invalido': form.get('grasa_pct')?.invalid && form.get('grasa_pct')?.touched}"
+            ></ion-input>
+          </div>
+
+          <div class="campo-grupo">
+            <label class="campo-label">Agua (%)</label>
+            <ion-input
+              type="number"
+              formControlName="agua_pct"
+              placeholder="Ej: 55.0"
+              inputmode="decimal"
+              class="ug-input campo-input"
+              [ngClass]="{'campo-invalido': form.get('agua_pct')?.invalid && form.get('agua_pct')?.touched}"
+            ></ion-input>
+          </div>
+
+          <div class="campo-grupo">
+            <label class="campo-label">Músculo (kg)</label>
+            <ion-input
+              type="number"
+              formControlName="musculo_kg"
+              placeholder="Ej: 35.0"
+              inputmode="decimal"
+              class="ug-input campo-input"
+              [ngClass]="{'campo-invalido': form.get('musculo_kg')?.invalid && form.get('musculo_kg')?.touched}"
+            ></ion-input>
+          </div>
+
+          <div class="campo-grupo">
+            <label class="campo-label">Grasa visceral</label>
+            <ion-input
+              type="number"
+              formControlName="grasa_visceral"
+              placeholder="Ej: 8"
+              inputmode="numeric"
+              class="ug-input campo-input"
+              [ngClass]="{'campo-invalido': form.get('grasa_visceral')?.invalid && form.get('grasa_visceral')?.touched}"
+            ></ion-input>
+          </div>
+
+          <div class="campo-grupo">
+            <label class="campo-label">TMB (kcal)</label>
+            <ion-input
+              type="number"
+              formControlName="tmb_kcal"
+              placeholder="Ej: 1650"
+              inputmode="numeric"
+              class="ug-input campo-input"
+              [ngClass]="{'campo-invalido': form.get('tmb_kcal')?.invalid && form.get('tmb_kcal')?.touched}"
+            ></ion-input>
+          </div>
+
+          <div class="campo-grupo campo-completo">
+            <label class="campo-label">IMC</label>
+            <ion-input
+              type="number"
+              formControlName="imc"
+              placeholder="Ej: 23.4"
+              inputmode="decimal"
+              class="ug-input campo-input"
+              [ngClass]="{'campo-invalido': form.get('imc')?.invalid && form.get('imc')?.touched}"
+            ></ion-input>
+          </div>
+
+        </div>
+
+        <!-- Mensaje de error -->
+        <div class="mensaje-error" *ngIf="errorMsg()">
+          <ion-icon name="alert-circle-outline"></ion-icon>
+          <span>{{ errorMsg() }}</span>
+        </div>
+
+        <ion-button
+          expand="block"
+          type="submit"
+          class="ug-btn-primary boton-guardar"
+          [disabled]="guardando()"
+        >
+          <ion-spinner *ngIf="guardando()" name="crescent" class="spinner-boton"></ion-spinner>
+          <span *ngIf="!guardando()">GUARDAR MEDICIÓN</span>
+        </ion-button>
+
+      </form>
+    </div>
+
+    <!-- Acceso directo al historial -->
+    <ion-button
+      expand="block"
+      fill="outline"
+      class="ug-btn-ghost btn-ver-historial"
+      (click)="irHistorial()"
+    >
+      <ion-icon name="time-outline" slot="start"></ion-icon>
+      Ver historial completo
+    </ion-button>
+
+  </div>
+
 </ion-content>

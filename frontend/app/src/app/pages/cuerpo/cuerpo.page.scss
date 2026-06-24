@@ -1,1 +1,256 @@
-// Cuerpo page styles
+.contenido-padding {
+  padding: var(--ug-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ug-lg);
+}
+
+.titulo-cuerpo {
+  font-size: 22px;
+  color: var(--ug-texto);
+  display: block;
+  line-height: 1.1;
+}
+
+.subtitulo-cuerpo {
+  display: block;
+  font-size: 12px;
+  color: var(--ug-apagado);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  margin-top: 1px;
+}
+
+.btn-historial {
+  --color: var(--ug-apagado);
+  font-size: 22px;
+  margin-right: 4px;
+}
+
+/* Última medición */
+.ultima-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ug-md);
+}
+
+.ultima-encabezado {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ultima-etiqueta {
+  font-size: 11px;
+  color: var(--ug-verde);
+  letter-spacing: 1px;
+}
+
+.ultima-fecha {
+  font-size: 12px;
+  color: var(--ug-apagado);
+}
+
+.metricas-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--ug-md);
+}
+
+.metrica-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--ug-superficie-2);
+  border-radius: var(--ug-radio-md);
+  padding: var(--ug-sm) var(--ug-xs);
+  gap: 2px;
+}
+
+.metrica-valor {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ug-texto);
+  line-height: 1.1;
+
+  &.verde { color: var(--ug-verde); }
+  &.azul { color: var(--ug-azul-agua); }
+  &.atleta { color: var(--ug-verde); }
+  &.fitness { color: #c8e600; }
+  &.promedio { color: var(--ug-ambar); }
+  &.obeso { color: var(--ug-error); }
+  &.muy-bajo { color: var(--ug-azul-agua); }
+  &.saludable { color: var(--ug-verde); }
+}
+
+.metrica-unidad {
+  font-size: 11px;
+  color: var(--ug-apagado);
+  line-height: 1;
+}
+
+.metrica-nombre {
+  font-size: 10px;
+  color: var(--ug-apagado);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+.metrica-clasif {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+
+  &.atleta { color: var(--ug-verde); }
+  &.fitness { color: #c8e600; }
+  &.promedio { color: var(--ug-ambar); }
+  &.obeso { color: var(--ug-error); }
+  &.muy-bajo { color: var(--ug-azul-agua); }
+  &.saludable { color: var(--ug-verde); }
+}
+
+/* Skeleton */
+.skeleton-ultima {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ug-md);
+}
+
+.skeleton-metricas {
+  display: flex;
+  gap: var(--ug-md);
+  justify-content: space-between;
+}
+
+/* Aviso primera medición */
+.aviso-primera {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ug-sm);
+  padding: var(--ug-xl) var(--ug-lg);
+  border: 1px dashed var(--ug-linea);
+  border-radius: var(--ug-radio-lg);
+  text-align: center;
+
+  ion-icon {
+    font-size: 40px;
+    color: var(--ug-verde);
+    opacity: 0.6;
+  }
+
+  p {
+    color: var(--ug-apagado);
+    font-size: 13px;
+    margin: 0;
+  }
+}
+
+/* Formulario */
+.form-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ug-md);
+}
+
+.form-titulo {
+  font-size: 14px;
+  color: var(--ug-verde);
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+.form-subtitulo {
+  font-size: 12px;
+  color: var(--ug-apagado);
+  margin: 0;
+}
+
+.campos-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--ug-md);
+}
+
+.campo-completo {
+  grid-column: 1 / -1;
+}
+
+.campo-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.campo-label {
+  font-size: 11px;
+  color: var(--ug-apagado);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.campo-input {
+  --background: var(--ug-superficie-2);
+  --color: var(--ug-texto);
+  --placeholder-color: var(--ug-apagado);
+  --border-radius: var(--ug-radio-sm);
+  --padding-start: var(--ug-sm);
+  --padding-end: var(--ug-sm);
+  --padding-top: 10px;
+  --padding-bottom: 10px;
+  border: 1px solid var(--ug-linea);
+  border-radius: var(--ug-radio-sm);
+  font-size: 15px;
+
+  &.campo-invalido {
+    border-color: var(--ug-error);
+  }
+}
+
+.mensaje-error {
+  display: flex;
+  align-items: center;
+  gap: var(--ug-xs);
+  padding: var(--ug-sm) var(--ug-md);
+  background: rgba(229, 57, 53, 0.1);
+  border-radius: var(--ug-radio-sm);
+  border: 1px solid var(--ug-error);
+
+  ion-icon {
+    font-size: 16px;
+    color: var(--ug-error);
+    flex-shrink: 0;
+  }
+
+  span {
+    font-size: 13px;
+    color: var(--ug-error);
+  }
+}
+
+.boton-guardar {
+  height: 52px;
+  font-size: 15px;
+  margin-top: var(--ug-sm);
+}
+
+.spinner-boton {
+  color: var(--ug-negro);
+  width: 20px;
+  height: 20px;
+}
+
+.btn-ver-historial {
+  --color: var(--ug-apagado);
+  --border-color: var(--ug-linea);
+  --border-width: 1px;
+  --border-style: solid;
+  --border-radius: var(--ug-radio-md);
+  height: 44px;
+  font-size: 14px;
+  margin-bottom: var(--ug-xl);
+}

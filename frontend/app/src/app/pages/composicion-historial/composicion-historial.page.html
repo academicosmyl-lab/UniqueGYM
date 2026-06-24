@@ -1,0 +1,134 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/cuerpo" text="Cuerpo"></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      <span class="ug-display titulo-historial">HISTORIAL</span>
+      <span class="subtitulo-historial">Composición corporal</span>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <!-- Error de red -->
+  <div class="estado-error" *ngIf="errorMsg() && !loading()">
+    <ion-icon name="cloud-offline-outline"></ion-icon>
+    <p>{{ errorMsg() }}</p>
+    <ion-button fill="clear" class="ug-btn-ghost btn-reintentar" (click)="cargarHistorial()">
+      Reintentar
+    </ion-button>
+  </div>
+
+  <!-- Skeleton loading -->
+  <div class="contenido-padding" *ngIf="loading()">
+    <div class="ug-card skeleton-item" *ngFor="let i of [1,2,3,4,5]">
+      <div class="skeleton-fila-top">
+        <ion-skeleton-text animated style="width: 90px; height: 14px; border-radius: 4px;"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width: 60px; height: 20px; border-radius: 10px;"></ion-skeleton-text>
+      </div>
+      <div class="skeleton-chips">
+        <ion-skeleton-text animated *ngFor="let j of [1,2,3]"
+          style="width: 70px; height: 36px; border-radius: 8px;"></ion-skeleton-text>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estado vacío -->
+  <div class="estado-vacio" *ngIf="!loading() && mediciones().length === 0 && !errorMsg()">
+    <ion-icon name="body-outline" class="icono-vacio"></ion-icon>
+    <h2 class="ug-display texto-vacio">Sin mediciones</h2>
+    <p class="subtexto-vacio">Registra tu primera medición para comenzar el seguimiento</p>
+    <ion-button class="ug-btn-primary" (click)="nueva()">
+      REGISTRAR MEDICIÓN
+    </ion-button>
+  </div>
+
+  <!-- Lista de mediciones -->
+  <div class="contenido-padding" *ngIf="!loading() && mediciones().length > 0">
+
+    <div
+      class="ug-card tarjeta-medicion"
+      *ngFor="let m of mediciones()"
+    >
+      <!-- Encabezado: fecha + badge atípica -->
+      <div class="medicion-encabezado">
+        <div class="medicion-fecha-grupo">
+          <ion-icon name="calendar-outline" class="icono-fecha"></ion-icon>
+          <span class="medicion-fecha">{{ formatFecha(m.fecha) }}</span>
+          <span class="badge-fuente" [class.badge-pesa]="m.fuente === 'PESA'">
+            {{ m.fuente === 'PESA' ? 'Pesa' : 'Manual' }}
+          </span>
+        </div>
+        <span class="badge-atipica" *ngIf="m.es_atipica">
+          <ion-icon name="warning-outline"></ion-icon>
+          Atípica
+        </span>
+      </div>
+
+      <!-- Métricas principales -->
+      <div class="metricas-row">
+
+        <div class="metrica-bloque" *ngIf="m.peso_kg != null">
+          <span class="metrica-num">{{ m.peso_kg }}</span>
+          <span class="metrica-unidad">kg</span>
+          <span class="metrica-lbl">Peso</span>
+        </div>
+
+        <div class="metrica-bloque" *ngIf="m.grasa_pct != null">
+          <span class="metrica-num grasa-color" [style.color]="colorGrasa(m.grasa_pct)">
+            {{ m.grasa_pct }}%
+          </span>
+          <span class="metrica-lbl">Grasa</span>
+          <span class="badge-clasif" [ngClass]="clasifGrasa(m.grasa_pct)">
+            {{ labelGrasa(m.grasa_pct) }}
+          </span>
+        </div>
+
+        <div class="metrica-bloque" *ngIf="m.musculo_kg != null">
+          <span class="metrica-num verde">{{ m.musculo_kg }}</span>
+          <span class="metrica-unidad">kg</span>
+          <span class="metrica-lbl">Músculo</span>
+        </div>
+
+        <div class="metrica-bloque" *ngIf="m.agua_pct != null">
+          <span class="metrica-num azul">{{ m.agua_pct }}%</span>
+          <span class="metrica-lbl">Agua</span>
+        </div>
+
+        <div class="metrica-bloque" *ngIf="m.imc != null">
+          <span class="metrica-num">{{ m.imc }}</span>
+          <span class="metrica-lbl">IMC</span>
+        </div>
+
+        <div class="metrica-bloque" *ngIf="m.grasa_visceral != null">
+          <span class="metrica-num" [ngClass]="clasifVisceral(m.grasa_visceral)">
+            {{ m.grasa_visceral }}
+          </span>
+          <span class="metrica-lbl">Visceral</span>
+          <span class="badge-clasif" [ngClass]="clasifVisceral(m.grasa_visceral)">
+            {{ labelVisceral(m.grasa_visceral) }}
+          </span>
+        </div>
+
+        <div class="metrica-bloque" *ngIf="m.tmb_kcal != null">
+          <span class="metrica-num">{{ m.tmb_kcal }}</span>
+          <span class="metrica-unidad">kcal</span>
+          <span class="metrica-lbl">TMB</span>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- FAB para nueva medición -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="!loading()">
+    <ion-fab-button class="fab-nueva" (click)="nueva()">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+</ion-content>

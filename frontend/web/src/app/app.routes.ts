@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { LayoutComponent } from './layout/layout.component';
 import { authGuard } from './core/guards/auth.guard';
+import { roleGuard } from './core/guards/role.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -40,6 +41,14 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/ejercicios/ejercicios.component').then(
             (m) => m.EjerciciosComponent
+          ),
+      },
+      {
+        path: 'composicion',
+        canActivate: [roleGuard(['ADMIN', 'ENTRENADOR'])],
+        loadComponent: () =>
+          import('./features/composicion/composicion.component').then(
+            (m) => m.ComposicionComponent
           ),
       },
     ],

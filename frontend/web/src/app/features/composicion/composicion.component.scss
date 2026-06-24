@@ -1,0 +1,233 @@
+.composicion-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ug-xl);
+}
+
+/* Cabecera */
+.page-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--ug-md);
+  flex-wrap: wrap;
+
+  h1 {
+    font-size: 36px;
+    color: var(--ug-verde);
+  }
+}
+
+.cliente-id-label {
+  font-size: 12px;
+}
+
+/* Secciones */
+.seccion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ug-md);
+}
+
+.seccion-titulo-row {
+  display: flex;
+  align-items: center;
+  gap: var(--ug-md);
+  flex-wrap: wrap;
+}
+
+.seccion-titulo {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  flex: 1;
+}
+
+.seccion-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--ug-sm);
+  flex-wrap: wrap;
+}
+
+/* Grid de métricas */
+.resumen-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: var(--ug-md);
+}
+
+.metrica-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ug-xs);
+  padding: var(--ug-lg);
+  min-height: 96px;
+  justify-content: space-between;
+  transition: border-color 0.15s;
+
+  &.card-atipica {
+    border-color: rgba(224, 101, 63, 0.4);
+    background: rgba(224, 101, 63, 0.05);
+  }
+}
+
+.metrica-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.metrica-valor {
+  font-size: 28px;
+  color: var(--ug-texto);
+  line-height: 1;
+}
+
+.metrica-valor-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--ug-sm);
+}
+
+.metrica-unit {
+  font-size: 11px;
+}
+
+.badge-nivel {
+  font-size: 9px;
+  align-self: center;
+}
+
+/* Tabla */
+.tabla-card {
+  padding: 0;
+  overflow-x: auto;
+
+  table {
+    margin: 0;
+    min-width: 700px;
+  }
+}
+
+.fecha-cell {
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.celda-num {
+  text-align: right;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.celda-num-badge {
+  font-size: 11px;
+}
+
+/* Fila atípica */
+.fila-atipica td {
+  background: rgba(224, 101, 63, 0.06);
+  border-left: 2px solid var(--ug-error);
+}
+
+.atipica-badge {
+  font-size: 9px;
+}
+
+/* Badges de fuente */
+.badge-pesa {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--ug-radio-pill);
+  text-transform: uppercase;
+  background: rgba(29, 222, 16, 0.12);
+  color: var(--ug-verde);
+}
+
+.badge-manual {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--ug-radio-pill);
+  text-transform: uppercase;
+  background: rgba(220, 220, 220, 0.1);
+  color: var(--ug-plata-3);
+}
+
+/* Estados de carga / vacío / error */
+.estado-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ug-md);
+  padding: var(--ug-2xl);
+  text-align: center;
+}
+
+.icono-estado {
+  font-size: 32px;
+  opacity: 0.5;
+}
+
+/* Skeleton */
+.skeleton-card {
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.04) 50%,
+      transparent 100%
+    );
+    animation: shimmer 1.4s infinite;
+  }
+}
+
+.sk-label {
+  height: 11px;
+  width: 60%;
+  background: var(--ug-superficie-2);
+  border-radius: var(--ug-radio-sm);
+  margin-bottom: var(--ug-sm);
+}
+
+.sk-valor {
+  height: 28px;
+  width: 80%;
+  background: var(--ug-superficie-3);
+  border-radius: var(--ug-radio-sm);
+}
+
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .resumen-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+
+    h1 { font-size: 28px; }
+  }
+
+  .resumen-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

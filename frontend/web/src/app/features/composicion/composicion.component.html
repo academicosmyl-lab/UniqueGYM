@@ -1,0 +1,187 @@
+<div class="composicion-page">
+
+  <!-- Cabecera -->
+  <div class="page-header">
+    <h1 class="ug-display">COMPOSICION CORPORAL</h1>
+    <span *ngIf="clienteId()" class="ug-text-apagado cliente-id-label">
+      Cliente: <span class="ug-datos">{{ clienteId() }}</span>
+    </span>
+  </div>
+
+  <!-- Error global -->
+  <div *ngIf="error()" class="ug-card estado-card">
+    <span class="icono-estado">&#9888;</span>
+    <p class="ug-text-error">{{ error() }}</p>
+  </div>
+
+  <!-- Skeleton loading -->
+  <ng-container *ngIf="loading() && !error()">
+    <div class="resumen-grid">
+      <div *ngFor="let i of [1,2,3,4,5,6]" class="ug-card metrica-card skeleton-card">
+        <div class="sk-label"></div>
+        <div class="sk-valor"></div>
+      </div>
+    </div>
+    <div class="ug-card tabla-card skeleton-card" style="height:260px;"></div>
+  </ng-container>
+
+  <!-- Contenido real -->
+  <ng-container *ngIf="!loading() && !error()">
+
+    <!-- Panel resumen última medición -->
+    <div *ngIf="ultima() as u" class="seccion">
+      <div class="seccion-titulo-row">
+        <span class="seccion-titulo ug-text-apagado">ULTIMA MEDICION</span>
+        <div class="seccion-meta">
+          <span class="ug-badge-info">{{ formatFecha(u.fecha) }}</span>
+          <span
+            class="ug-badge"
+            [class.badge-pesa]="u.fuente === 'PESA'"
+            [class.badge-manual]="u.fuente === 'MANUAL'"
+          >{{ labelFuente(u.fuente) }}</span>
+          <span *ngIf="u.es_atipica" class="ug-badge-warn">ATIPICA</span>
+        </div>
+      </div>
+
+      <div class="resumen-grid">
+
+        <div class="ug-card metrica-card" [class.card-atipica]="u.es_atipica">
+          <span class="metrica-label ug-text-apagado">Peso</span>
+          <span class="metrica-valor ug-datos">{{ formatNum(u.peso_kg) }}</span>
+          <span class="metrica-unit ug-text-apagado">kg</span>
+        </div>
+
+        <div class="ug-card metrica-card" [class.card-atipica]="u.es_atipica">
+          <span class="metrica-label ug-text-apagado">% Grasa</span>
+          <div class="metrica-valor-row">
+            <span class="metrica-valor ug-datos">{{ formatNum(u.grasa_pct) }}</span>
+            <span [ngClass]="badgeGrasa(u.grasa_pct)" *ngIf="u.grasa_pct !== null">%</span>
+          </div>
+          <span class="metrica-unit ug-text-apagado">grasa corporal</span>
+        </div>
+
+        <div class="ug-card metrica-card" [class.card-atipica]="u.es_atipica">
+          <span class="metrica-label ug-text-apagado">% Agua</span>
+          <span class="metrica-valor ug-datos">{{ formatNum(u.agua_pct) }}</span>
+          <span class="metrica-unit ug-text-apagado">hidratacion</span>
+        </div>
+
+        <div class="ug-card metrica-card" [class.card-atipica]="u.es_atipica">
+          <span class="metrica-label ug-text-apagado">Musculo</span>
+          <span class="metrica-valor ug-datos">{{ formatNum(u.musculo_kg) }}</span>
+          <span class="metrica-unit ug-text-apagado">kg musculo</span>
+        </div>
+
+        <div class="ug-card metrica-card" [class.card-atipica]="u.es_atipica">
+          <span class="metrica-label ug-text-apagado">Grasa visceral</span>
+          <div class="metrica-valor-row">
+            <span class="metrica-valor ug-datos">{{ formatNum(u.grasa_visceral, 0) }}</span>
+            <span [ngClass]="badgeVisceral(u.grasa_visceral)" *ngIf="u.grasa_visceral !== null" class="badge-nivel">nivel</span>
+          </div>
+          <span class="metrica-unit ug-text-apagado">nivel visceral</span>
+        </div>
+
+        <div class="ug-card metrica-card" [class.card-atipica]="u.es_atipica">
+          <span class="metrica-label ug-text-apagado">IMC</span>
+          <div class="metrica-valor-row">
+            <span class="metrica-valor ug-datos">{{ formatNum(u.imc) }}</span>
+            <span [ngClass]="badgeImc(u.imc)" *ngIf="u.imc !== null" class="badge-nivel">indice</span>
+          </div>
+          <span class="metrica-unit ug-text-apagado">indice masa corporal</span>
+        </div>
+
+        <div class="ug-card metrica-card" [class.card-atipica]="u.es_atipica">
+          <span class="metrica-label ug-text-apagado">TMB</span>
+          <span class="metrica-valor ug-datos">{{ formatNum(u.tmb_kcal, 0) }}</span>
+          <span class="metrica-unit ug-text-apagado">kcal / dia</span>
+        </div>
+
+        <div class="ug-card metrica-card" [class.card-atipica]="u.es_atipica">
+          <span class="metrica-label ug-text-apagado">Edad metabolica</span>
+          <span class="metrica-valor ug-datos">{{ formatNum(u.edad_metabolica, 0) }}</span>
+          <span class="metrica-unit ug-text-apagado">anos</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Sin última medición -->
+    <div *ngIf="!ultima() && !loading()" class="ug-card estado-card">
+      <span class="icono-estado">&#128190;</span>
+      <p class="ug-text-apagado">Este cliente aun no tiene mediciones registradas</p>
+    </div>
+
+    <!-- Historial -->
+    <div *ngIf="tieneHistorial()" class="seccion">
+      <div class="seccion-titulo-row">
+        <span class="seccion-titulo ug-text-apagado">HISTORIAL DE MEDICIONES</span>
+        <span class="ug-badge-info">{{ historial().length }} registros</span>
+      </div>
+
+      <div class="ug-card tabla-card">
+        <table class="ug-table">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Fuente</th>
+              <th>Peso kg</th>
+              <th>% Grasa</th>
+              <th>% Agua</th>
+              <th>Musculo kg</th>
+              <th>G. Visceral</th>
+              <th>IMC</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let m of historial()"
+              [class.fila-atipica]="m.es_atipica"
+            >
+              <td>
+                <span class="fecha-cell">{{ formatFecha(m.fecha) }}</span>
+              </td>
+              <td>
+                <span
+                  class="ug-badge"
+                  [class.badge-pesa]="m.fuente === 'PESA'"
+                  [class.badge-manual]="m.fuente === 'MANUAL'"
+                >{{ labelFuente(m.fuente) }}</span>
+              </td>
+              <td class="ug-datos celda-num">{{ formatNum(m.peso_kg) }}</td>
+              <td>
+                <span [ngClass]="badgeGrasa(m.grasa_pct) || 'celda-num'" class="celda-num-badge">
+                  {{ formatNum(m.grasa_pct) }}%
+                </span>
+              </td>
+              <td class="celda-num">{{ formatNum(m.agua_pct) }}%</td>
+              <td class="ug-datos celda-num">{{ formatNum(m.musculo_kg) }}</td>
+              <td>
+                <span [ngClass]="badgeVisceral(m.grasa_visceral) || 'celda-num'" class="celda-num-badge">
+                  {{ formatNum(m.grasa_visceral, 0) }}
+                </span>
+              </td>
+              <td>
+                <span [ngClass]="badgeImc(m.imc) || 'celda-num'" class="celda-num-badge">
+                  {{ formatNum(m.imc) }}
+                </span>
+              </td>
+              <td>
+                <span *ngIf="m.es_atipica" class="ug-badge-err atipica-badge">ATIPICA</span>
+                <span *ngIf="!m.es_atipica" class="ug-badge-ok">OK</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Sin historial -->
+    <div *ngIf="!tieneHistorial() && !loading()" class="ug-card estado-card">
+      <span class="icono-estado">&#128202;</span>
+      <p class="ug-text-apagado">Este cliente aun no tiene mediciones registradas</p>
+    </div>
+
+  </ng-container>
+
+</div>

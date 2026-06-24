@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { ExercisesModule } from './exercises/exercises.module';
 import { RoutinesModule } from './routines/routines.module';
 import { WorkoutSessionsModule } from './workout-sessions/workout-sessions.module';
+import { BodyCompositionModule } from './body-composition/body-composition.module';
 
 @Module({
   imports: [
@@ -26,8 +27,9 @@ import { WorkoutSessionsModule } from './workout-sessions/workout-sessions.modul
     ExercisesModule,
     RoutinesModule,
     WorkoutSessionsModule,
+    BodyCompositionModule,
     // Próximos módulos por fases:
-    // BodyCompositionModule, NutritionModule, AttendanceModule
+    // NutritionModule, AttendanceModule
   ],
 })
 export class AppModule {}
