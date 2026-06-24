@@ -1,0 +1,133 @@
+<div class="asistencia-page">
+
+  <div class="page-header">
+    <h1 class="ug-display">ASISTENCIA</h1>
+    <button class="ug-btn-primary" (click)="abrirModalManual()">+ REGISTRAR ENTRADA MANUAL</button>
+  </div>
+
+  <div class="ug-card filtros-card">
+    <div class="filtros-fila">
+      <div class="filtro-grupo">
+        <label class="filtro-label ug-text-apagado">Desde</label>
+        <input
+          class="ug-input"
+          type="date"
+          [ngModel]="desde()"
+          (ngModelChange)="desde.set($event)"
+        />
+      </div>
+      <div class="filtro-grupo">
+        <label class="filtro-label ug-text-apagado">Hasta</label>
+        <input
+          class="ug-input"
+          type="date"
+          [ngModel]="hasta()"
+          (ngModelChange)="hasta.set($event)"
+        />
+      </div>
+      <button class="ug-btn-ghost" (click)="filtrar()" [disabled]="loading()">
+        {{ loading() ? 'CARGANDO...' : 'FILTRAR' }}
+      </button>
+    </div>
+    <div class="resumen-fila">
+      <span class="ug-text-apagado" style="font-size:13px">Total de entradas en el periodo:</span>
+      <span class="total-pill">{{ total() }}</span>
+    </div>
+  </div>
+
+  <div *ngIf="error()" class="ug-card estado-card">
+    <span class="icono-estado">&#9888;</span>
+    <p class="ug-text-apagado">{{ error() }}</p>
+    <button class="ug-btn-ghost ug-btn-sm" (click)="cargarRegistros()">Reintentar</button>
+  </div>
+
+  <div *ngIf="loading()" class="ug-card tabla-card skeleton-tabla">
+    <div *ngFor="let i of [1,2,3,4,5,6]" class="sk-fila">
+      <div class="sk-bloque sk-hora"></div>
+      <div class="sk-bloque sk-nombre"></div>
+      <div class="sk-bloque sk-metodo"></div>
+    </div>
+  </div>
+
+  <div *ngIf="!loading() && !error()" class="ug-card tabla-card">
+    <table class="ug-table">
+      <thead>
+        <tr>
+          <th>Hora</th>
+          <th>Fecha</th>
+          <th>Cliente</th>
+          <th>Metodo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let r of registros()">
+          <td class="celda-hora">{{ formatHora(r.created_at) }}</td>
+          <td class="celda-fecha ug-text-apagado">{{ formatFecha(r.created_at) }}</td>
+          <td>{{ nombreCliente(r) }}</td>
+          <td>
+            <span class="badge-metodo" [class.badge-qr]="r.metodo === 'QR'" [class.badge-manual]="r.metodo === 'MANUAL'">
+              {{ labelMetodo(r.metodo) }}
+            </span>
+          </td>
+        </tr>
+
+        <tr *ngIf="registros().length === 0">
+          <td colspan="4" class="estado-vacio-inline">
+            <div class="vacio-bloque">
+              <span class="icono-vacio">&#128197;</span>
+              <p class="ug-text-apagado">Sin registros de asistencia para este periodo</p>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<div *ngIf="showModalManual()" class="modal-overlay" (click)="cerrarModal()">
+  <div class="modal-cuerpo ug-card" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <h2 class="modal-titulo">REGISTRAR ENTRADA MANUAL</h2>
+      <button class="ug-btn-ghost ug-btn-sm" (click)="cerrarModal()">&#10005;</button>
+    </div>
+
+    <div *ngIf="!confirmacionModal()" class="modal-body">
+      <label class="campo-label ug-text-apagado">Selecciona el cliente</label>
+      <select
+        class="ug-select"
+        [ngModel]="clienteSeleccionadoId()"
+        (ngModelChange)="clienteSeleccionadoId.set($event)"
+      >
+        <option value="">Seleccionar cliente...</option>
+        <option *ngFor="let c of clientes()" [value]="c.id">
+          {{ nombreClienteOpc(c) }}
+        </option>
+      </select>
+
+      <div *ngIf="clientes().length === 0" class="ug-text-apagado" style="font-size:12px; margin-top:var(--ug-sm);">
+        No hay clientes registrados aun
+      </div>
+
+      <div *ngIf="errorModal()" class="error-modal">{{ errorModal() }}</div>
+
+      <div class="modal-acciones">
+        <button class="ug-btn-ghost" (click)="cerrarModal()">CANCELAR</button>
+        <button
+          class="ug-btn-primary"
+          (click)="registrarManual()"
+          [disabled]="registrando()"
+        >
+          {{ registrando() ? 'REGISTRANDO...' : 'REGISTRAR' }}
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="confirmacionModal()" class="modal-confirmacion">
+      <span class="icono-ok">&#10003;</span>
+      <p>Entrada registrada correctamente</p>
+    </div>
+
+  </div>
+</div>

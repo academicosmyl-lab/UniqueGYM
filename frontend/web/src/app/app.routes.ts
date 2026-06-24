@@ -67,6 +67,14 @@ export const routes: Routes = [
             (m) => m.ProgresoComponent
           ),
       },
+      {
+        path: 'asistencia',
+        canActivate: [roleGuard(['ADMIN', 'ENTRENADOR', 'RECEPCION'])],
+        loadComponent: () =>
+          import('./features/asistencia/asistencia.component').then(
+            (m) => m.AsistenciaComponent
+          ),
+      },
     ],
   },
   { path: '**', redirectTo: 'login' },

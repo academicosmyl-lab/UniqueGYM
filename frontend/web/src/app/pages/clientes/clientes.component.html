@@ -1,6 +1,5 @@
 <div class="clientes-page">
 
-  <!-- Cabecera -->
   <div class="page-header">
     <h1 class="ug-display">CLIENTES</h1>
     <div class="header-right">
@@ -12,22 +11,37 @@
         (ngModelChange)="search.set($event)"
       />
       <span class="ug-badge-info total-badge">{{ filteredClientes().length }} clientes</span>
+      <button class="ug-btn-primary" (click)="abrirCrearPanel()">+ NUEVO CLIENTE</button>
     </div>
   </div>
 
-  <!-- Layout principal -->
-  <div class="layout-principal" [class.con-panel]="showDetailPanel()">
+  <div *ngIf="error()" class="ug-card estado-card">
+    <span class="icono-estado">&#9888;</span>
+    <p class="ug-text-apagado">{{ error() }}</p>
+    <button class="ug-btn-ghost ug-btn-sm" (click)="cargarClientes()">Reintentar</button>
+  </div>
 
-    <!-- Columna tabla -->
+  <div class="layout-principal" [class.con-panel]="showDetailPanel() || showCrearPanel()">
+
     <div class="columna-tabla">
 
-      <!-- Loading -->
-      <div *ngIf="loading()" class="ug-card" style="text-align:center; padding:var(--ug-2xl);">
-        <span class="ug-text-apagado">Cargando clientes...</span>
+      <div *ngIf="loading()" class="ug-card tabla-card skeleton-tabla">
+        <div *ngFor="let i of [1,2,3,4,5]" class="sk-fila">
+          <div class="sk-avatar"></div>
+          <div class="sk-bloque">
+            <div class="sk-linea sk-linea-lg"></div>
+            <div class="sk-linea sk-linea-sm"></div>
+          </div>
+          <div class="sk-bloque">
+            <div class="sk-linea sk-linea-md"></div>
+          </div>
+          <div class="sk-bloque">
+            <div class="sk-linea sk-linea-sm"></div>
+          </div>
+        </div>
       </div>
 
-      <!-- Tabla -->
-      <div *ngIf="!loading()" class="ug-card tabla-card">
+      <div *ngIf="!loading() && !error()" class="ug-card tabla-card">
         <table class="ug-table">
           <thead>
             <tr>
@@ -35,7 +49,7 @@
               <th>Email</th>
               <th>Objetivo</th>
               <th>Estado</th>
-              <th>Acción</th>
+              <th>Accion</th>
             </tr>
           </thead>
           <tbody>
@@ -64,10 +78,13 @@
               </td>
             </tr>
 
-            <!-- Estado vacío -->
-            <tr *ngIf="filteredClientes().length === 0">
+            <tr *ngIf="filteredClientes().length === 0 && !loading()">
               <td colspan="5" class="estado-vacio-inline">
-                <span class="ug-text-apagado">No se encontraron clientes</span>
+                <div class="vacio-bloque">
+                  <span class="icono-vacio">&#128101;</span>
+                  <p class="ug-text-apagado">Aun no hay clientes registrados — crea el primero</p>
+                  <button class="ug-btn-primary ug-btn-sm" (click)="abrirCrearPanel()">+ NUEVO CLIENTE</button>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -76,22 +93,19 @@
 
     </div>
 
-    <!-- Panel detalle -->
-    <div *ngIf="showDetailPanel() && selectedCliente() as cliente" class="panel-detalle ug-card">
+    <div *ngIf="showDetailPanel() && selectedCliente() as cliente" class="panel-lateral ug-card">
 
-      <!-- Header panel -->
       <div class="panel-header">
-        <h2 class="ug-display panel-nombre">{{ cliente.nombres }} {{ cliente.apellidos }}</h2>
-        <button class="ug-btn-ghost ug-btn-sm" (click)="closePanel()">&#10005;</button>
+        <div class="panel-avatar">{{ iniciales(cliente) }}</div>
+        <div class="panel-nombre-bloque">
+          <h2 class="panel-nombre">{{ cliente.nombres }} {{ cliente.apellidos }}</h2>
+          <span class="ug-text-apagado" style="font-size:12px">{{ cliente.email }}</span>
+        </div>
+        <button class="ug-btn-ghost ug-btn-sm btn-cerrar" (click)="closePanel()">&#10005;</button>
       </div>
 
-      <!-- Info básica -->
       <div class="panel-seccion">
-        <p class="seccion-titulo ug-text-apagado">INFORMACIÓN</p>
-        <div class="info-fila">
-          <span class="info-label ug-text-apagado">Email</span>
-          <span>{{ cliente.email }}</span>
-        </div>
+        <p class="seccion-titulo ug-text-apagado">INFORMACION</p>
         <div class="info-fila">
           <span class="info-label ug-text-apagado">Objetivo</span>
           <span [class]="badgeObjetivo(cliente.objetivo)">{{ labelObjetivo(cliente.objetivo) }}</span>
@@ -103,10 +117,40 @@
         </div>
       </div>
 
-      <!-- Asignar rutina -->
+      <div class="panel-seccion">
+        <p class="seccion-titulo ug-text-apagado">NAVEGACION</p>
+        <div class="acciones-stack">
+          <button class="ug-btn-ghost w-full" (click)="verComposicion(cliente.id)">
+            Ver Composicion
+          </button>
+          <button class="ug-btn-ghost w-full" (click)="verNutricion(cliente.id)">
+            Ver Nutricion
+          </button>
+          <button class="ug-btn-ghost w-full" (click)="verProgreso(cliente.id)">
+            Ver Progreso
+          </button>
+        </div>
+      </div>
+
+      <div class="panel-seccion">
+        <p class="seccion-titulo ug-text-apagado">ENTRADA AL GYM</p>
+        <button
+          class="ug-btn-primary w-full"
+          (click)="registrarEntrada(cliente.id)"
+          [disabled]="registrandoEntrada()"
+        >
+          {{ registrandoEntrada() ? 'REGISTRANDO...' : 'REGISTRAR ENTRADA' }}
+        </button>
+        <div *ngIf="confirmacionEntrada() === 'OK'" class="confirmacion-ok">
+          Entrada registrada correctamente
+        </div>
+        <div *ngIf="confirmacionEntrada() === 'ERROR'" class="confirmacion-err">
+          No se pudo registrar la entrada
+        </div>
+      </div>
+
       <div class="panel-seccion">
         <p class="seccion-titulo ug-text-apagado">RUTINA ASIGNADA</p>
-
         <select
           class="ug-select"
           [ngModel]="rutinaSeleccionada()"
@@ -118,11 +162,9 @@
             {{ r.nombre }} ({{ r.semanas }} sem.)
           </option>
         </select>
-
         <div *ngIf="rutinas().length === 0" class="ug-text-apagado" style="font-size:12px; margin-bottom:var(--ug-md);">
-          No hay plantillas disponibles aún
+          No hay plantillas disponibles aun
         </div>
-
         <button
           class="ug-btn-primary w-full"
           (click)="asignarRutina(cliente.id, rutinaSeleccionada())"
@@ -131,22 +173,79 @@
         </button>
       </div>
 
-      <!-- Acciones rápidas -->
-      <div class="panel-seccion">
-        <p class="seccion-titulo ug-text-apagado">ACCIONES RÁPIDAS</p>
-        <div class="acciones-stack">
-          <button class="ug-btn-ghost w-full" disabled>
-            Ver composición corporal
-          </button>
-          <button class="ug-btn-ghost w-full" disabled>
-            Ver plan nutricional
-          </button>
-        </div>
+    </div>
+
+    <div *ngIf="showCrearPanel()" class="panel-lateral ug-card">
+
+      <div class="panel-header">
+        <h2 class="panel-nombre" style="font-size:18px">NUEVO CLIENTE</h2>
+        <button class="ug-btn-ghost ug-btn-sm btn-cerrar" (click)="cerrarCrearPanel()">&#10005;</button>
       </div>
 
-      <p class="ug-text-apagado nota-panel">
-        La gestión completa de clientes se completa en Fase 3 y 4
-      </p>
+      <div class="panel-seccion">
+        <p class="seccion-titulo ug-text-apagado">DATOS PERSONALES</p>
+
+        <div class="campo-grupo">
+          <label class="campo-label ug-text-apagado">Nombres *</label>
+          <input
+            class="ug-input"
+            type="text"
+            placeholder="Nombres"
+            [(ngModel)]="nuevoCliente.nombres"
+          />
+        </div>
+
+        <div class="campo-grupo">
+          <label class="campo-label ug-text-apagado">Apellidos *</label>
+          <input
+            class="ug-input"
+            type="text"
+            placeholder="Apellidos"
+            [(ngModel)]="nuevoCliente.apellidos"
+          />
+        </div>
+
+        <div class="campo-grupo">
+          <label class="campo-label ug-text-apagado">Email *</label>
+          <input
+            class="ug-input"
+            type="email"
+            placeholder="correo@ejemplo.com"
+            [(ngModel)]="nuevoCliente.email"
+          />
+        </div>
+
+        <div class="campo-grupo">
+          <label class="campo-label ug-text-apagado">Contrasena *</label>
+          <input
+            class="ug-input"
+            type="password"
+            placeholder="Contrasena inicial"
+            [(ngModel)]="nuevoCliente.password"
+          />
+        </div>
+
+        <div class="campo-grupo">
+          <label class="campo-label ug-text-apagado">Objetivo</label>
+          <select class="ug-select" [(ngModel)]="nuevoCliente.objetivo">
+            <option value="">Sin objetivo definido</option>
+            <option value="PERDER_GRASA">Perder grasa</option>
+            <option value="GANAR_MUSCULO">Ganar musculo</option>
+            <option value="MANTENER">Mantener</option>
+            <option value="RECOMPOSICION">Recomposicion</option>
+          </select>
+        </div>
+
+        <div *ngIf="errorCrear()" class="error-crear">{{ errorCrear() }}</div>
+
+        <button
+          class="ug-btn-primary w-full"
+          (click)="crearCliente()"
+          [disabled]="guardandoCliente()"
+        >
+          {{ guardandoCliente() ? 'CREANDO...' : 'CREAR CLIENTE' }}
+        </button>
+      </div>
 
     </div>
 

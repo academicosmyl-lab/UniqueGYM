@@ -9,6 +9,7 @@ import { WorkoutSessionsModule } from './workout-sessions/workout-sessions.modul
 import { BodyCompositionModule } from './body-composition/body-composition.module';
 import { NutritionModule } from './nutrition/nutrition.module';
 import { AnalyticsModule } from './analytics/analytics.module';
+import { AttendanceModule } from './attendance/attendance.module';
 
 @Module({
   imports: [
@@ -32,8 +33,7 @@ import { AnalyticsModule } from './analytics/analytics.module';
     BodyCompositionModule,
     NutritionModule,
     AnalyticsModule,
-    // Próximos módulos por fases:
-    // AttendanceModule
+    AttendanceModule,
   ],
 })
 export class AppModule {}

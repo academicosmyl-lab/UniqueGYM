@@ -1,0 +1,264 @@
+.asistencia-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ug-xl);
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ug-md);
+  flex-wrap: wrap;
+
+  h1 { font-size: 36px; }
+}
+
+.filtros-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ug-md);
+  padding: var(--ug-lg);
+}
+
+.filtros-fila {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--ug-md);
+  flex-wrap: wrap;
+}
+
+.filtro-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.filtro-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.resumen-fila {
+  display: flex;
+  align-items: center;
+  gap: var(--ug-md);
+  padding-top: var(--ug-sm);
+  border-top: 1px solid var(--ug-linea);
+}
+
+.total-pill {
+  background: var(--ug-verde);
+  color: var(--ug-negro);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 2px 12px;
+  border-radius: var(--ug-radio-pill);
+}
+
+.tabla-card {
+  padding: 0;
+  overflow-x: auto;
+
+  table { margin: 0; }
+}
+
+.celda-hora {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ug-verde);
+  white-space: nowrap;
+}
+
+.celda-fecha {
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.badge-metodo {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: var(--ug-radio-pill);
+  text-transform: uppercase;
+  background: rgba(220, 220, 220, 0.1);
+  color: var(--ug-plata-3);
+}
+
+.badge-qr {
+  background: rgba(29, 222, 16, 0.12);
+  color: var(--ug-verde);
+}
+
+.badge-manual {
+  background: rgba(220, 220, 220, 0.1);
+  color: var(--ug-plata-3);
+}
+
+.estado-vacio-inline {
+  text-align: center;
+  padding: var(--ug-2xl) !important;
+}
+
+.vacio-bloque {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ug-md);
+}
+
+.icono-vacio {
+  font-size: 36px;
+  opacity: 0.4;
+}
+
+.estado-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ug-md);
+  padding: var(--ug-2xl);
+  text-align: center;
+}
+
+.icono-estado {
+  font-size: 32px;
+  opacity: 0.5;
+}
+
+.skeleton-tabla {
+  padding: var(--ug-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ug-md);
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.04) 50%,
+      transparent 100%
+    );
+    animation: shimmer 1.4s infinite;
+  }
+}
+
+.sk-fila {
+  display: flex;
+  align-items: center;
+  gap: var(--ug-lg);
+  padding: var(--ug-sm) 0;
+  border-bottom: 1px solid var(--ug-linea);
+}
+
+.sk-bloque {
+  height: 12px;
+  background: var(--ug-superficie-2);
+  border-radius: var(--ug-radio-sm);
+}
+
+.sk-hora { width: 56px; }
+.sk-nombre { width: 180px; }
+.sk-metodo { width: 72px; }
+
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 5, 5, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--ug-lg);
+}
+
+.modal-cuerpo {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ug-lg);
+  padding: var(--ug-xl);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ug-md);
+}
+
+.modal-titulo {
+  font-size: 16px;
+  letter-spacing: 0.06em;
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ug-md);
+}
+
+.campo-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.error-modal {
+  background: rgba(224, 101, 63, 0.1);
+  border: 1px solid var(--ug-error);
+  border-radius: var(--ug-radio-sm);
+  color: var(--ug-error);
+  font-size: 12px;
+  padding: var(--ug-sm) var(--ug-md);
+}
+
+.modal-acciones {
+  display: flex;
+  gap: var(--ug-md);
+  justify-content: flex-end;
+  padding-top: var(--ug-sm);
+  border-top: 1px solid var(--ug-linea);
+}
+
+.modal-confirmacion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ug-md);
+  padding: var(--ug-xl) 0;
+  text-align: center;
+}
+
+.icono-ok {
+  font-size: 40px;
+  color: var(--ug-verde);
+  font-weight: 700;
+}
+
+@media (max-width: 600px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+
+    h1 { font-size: 28px; }
+  }
+
+  .filtros-fila {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

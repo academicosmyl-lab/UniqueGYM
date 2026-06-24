@@ -8,6 +8,7 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UserRole } from '../common/enums/user-role.enum';
 
 const BCRYPT_ROUNDS = 10;
 
@@ -47,6 +48,22 @@ export class UsersService {
   /**
    * Crea un usuario hasheando la contraseña con bcrypt.
    */
+  async findByGymAndRole(gymId: string, role?: UserRole): Promise<User[]> {
+    const where: any = { gym_id: gymId, activo: true, deleted_at: null };
+    if (role) where.role = role;
+    return this.usersRepo.find({
+      where,
+      order: { nombres: 'ASC' },
+    });
+  }
+
+  async desactivar(id: string): Promise<User> {
+    const user = await this.findById(id);
+    user.activo = false;
+    user.deleted_at = new Date() as any;
+    return this.usersRepo.save(user);
+  }
+
   async create(dto: CreateUserDto): Promise<User> {
     const existing = dto.email
       ? await this.usersRepo.findOne({ where: { email: dto.email } })

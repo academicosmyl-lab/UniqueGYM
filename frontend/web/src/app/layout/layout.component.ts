@@ -21,6 +21,12 @@ export class LayoutComponent {
     this.userRole() === 'ADMIN' || this.userRole() === 'ENTRENADOR'
   );
 
+  esStaff = computed(() =>
+    this.userRole() === 'ADMIN' ||
+    this.userRole() === 'ENTRENADOR' ||
+    this.userRole() === 'RECEPCION'
+  );
+
   logout(): void {
     this.auth.logout();
   }
