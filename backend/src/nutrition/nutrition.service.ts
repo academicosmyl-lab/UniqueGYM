@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IsNull, Repository } from 'typeorm';
+import { DataSource, IsNull, Repository } from 'typeorm';
 import { NutritionPlan, ObjetivoNutriPlan } from './entities/nutrition-plan.entity';
 import { NutritionMeal } from './entities/nutrition-meal.entity';
 import { NutritionMealItem } from './entities/nutrition-meal-item.entity';
@@ -44,6 +44,7 @@ export class NutritionService {
     private readonly userRepo: Repository<User>,
     @InjectRepository(BodyComposition)
     private readonly bcRepo: Repository<BodyComposition>,
+    private readonly dataSource: DataSource,
   ) {}
 
   calcularMacros(
@@ -165,11 +166,17 @@ export class NutritionService {
   }
 
   async findActivoPorCliente(clienteId: string): Promise<NutritionPlan> {
-    const plan = await this.planRepo.findOne({
-      where: { cliente_id: clienteId, activo: true, deleted_at: IsNull() },
-      relations: { comidas: { alimentos: true } },
-      order: { created_at: 'DESC' },
-    });
+    const plan = await this.dataSource
+      .getRepository(NutritionPlan)
+      .createQueryBuilder('plan')
+      .where('plan.cliente_id = :clienteId', { clienteId })
+      .andWhere('plan.activo = true')
+      .andWhere('plan.deleted_at IS NULL')
+      .leftJoinAndSelect('plan.comidas', 'comida')
+      .leftJoinAndSelect('comida.alimentos', 'alimento')
+      .orderBy('plan.created_at', 'DESC')
+      .addOrderBy('comida.orden', 'ASC')
+      .getOne();
 
     if (!plan) {
       throw new NotFoundException(
@@ -183,13 +190,18 @@ export class NutritionService {
   async findAllPorCliente(
     clienteId: string,
   ): Promise<{ data: NutritionPlan[]; total: number }> {
-    const [data, total] = await this.planRepo.findAndCount({
-      where: { cliente_id: clienteId, deleted_at: IsNull() },
-      relations: { comidas: { alimentos: true } },
-      order: { created_at: 'DESC' },
-    });
+    const data = await this.dataSource
+      .getRepository(NutritionPlan)
+      .createQueryBuilder('plan')
+      .where('plan.cliente_id = :clienteId', { clienteId })
+      .andWhere('plan.deleted_at IS NULL')
+      .leftJoinAndSelect('plan.comidas', 'comida')
+      .leftJoinAndSelect('comida.alimentos', 'alimento')
+      .orderBy('plan.created_at', 'DESC')
+      .addOrderBy('comida.orden', 'ASC')
+      .getMany();
 
-    return { data, total };
+    return { data, total: data.length };
   }
 
   async addMeal(planId: string, dto: AddMealDto): Promise<NutritionMeal> {

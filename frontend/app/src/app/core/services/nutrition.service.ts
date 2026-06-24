@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 const API_URL = 'https://uniquegym.onrender.com/api/v1';
 
@@ -34,11 +35,34 @@ export interface NutritionPlan {
   meals: NutritionMeal[];
 }
 
+function mapPlan(raw: any): NutritionPlan {
+  const comidas: any[] = raw.comidas ?? raw.meals ?? [];
+  return {
+    id: raw.id,
+    objetivo: raw.objetivo,
+    kcal_objetivo: raw.kcal_objetivo,
+    proteina_g: raw.proteina_g,
+    carbos_g: raw.carbos_g,
+    grasa_g: raw.grasa_g,
+    agua_ml: raw.agua_ml ?? null,
+    notas: raw.notas ?? null,
+    meals: comidas.map((c: any) => ({
+      id: c.id,
+      nombre: c.nombre,
+      orden: c.orden,
+      kcal: c.kcal ?? null,
+      items: (c.alimentos ?? c.items ?? []) as NutritionMealItem[],
+    })),
+  };
+}
+
 @Injectable({ providedIn: 'root' })
 export class NutritionService {
   constructor(private http: HttpClient) {}
 
   getMiPlan(): Observable<NutritionPlan> {
-    return this.http.get<NutritionPlan>(`${API_URL}/nutrition/mi-plan`);
+    return this.http
+      .get<any>(`${API_URL}/nutrition/mi-plan`)
+      .pipe(map(res => mapPlan(res?.data ?? res)));
   }
 }

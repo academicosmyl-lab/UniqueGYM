@@ -7,6 +7,7 @@ export interface Exercise {
   instrucciones?: string;
   video_url?: string;
   thumbnail_url?: string;
+  gif_url?: string;
   dificultad: Dificultad;
 }
 
