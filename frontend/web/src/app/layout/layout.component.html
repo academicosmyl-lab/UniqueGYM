@@ -1,53 +1,34 @@
-<!-- Shell: sidebar fijo + topbar + contenido -->
+<div class="sidebar-overlay" [class.visible]="sidebarOpen()" (click)="closeSidebar()"></div>
+
 <div class="shell">
-  <aside class="sidebar">
+  <aside class="sidebar" [class.open]="sidebarOpen()">
     <div class="sidebar-logo">
       <span class="ug-display" style="color:var(--ug-verde);font-size:22px">UNIQUE GYM</span>
       <span style="color:var(--ug-apagado);font-size:11px">Panel de gestion</span>
     </div>
     <nav class="sidebar-nav">
-      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item" (click)="closeSidebar()">
         <span class="nav-icon">&#128202;</span> Dashboard
       </a>
-      <a routerLink="/clientes" routerLinkActive="active" class="nav-item">
+      <a routerLink="/clientes" routerLinkActive="active" class="nav-item" (click)="closeSidebar()">
         <span class="nav-icon">&#128101;</span> Clientes
       </a>
-      <a routerLink="/rutinas" routerLinkActive="active" class="nav-item">
+      <a routerLink="/rutinas" routerLinkActive="active" class="nav-item" (click)="closeSidebar()">
         <span class="nav-icon">&#128170;</span> Rutinas
       </a>
-      <a routerLink="/ejercicios" routerLinkActive="active" class="nav-item">
+      <a routerLink="/ejercicios" routerLinkActive="active" class="nav-item" (click)="closeSidebar()">
         <span class="nav-icon">&#127947;</span> Ejercicios
       </a>
-      <a
-        *ngIf="esAdminOEntrenador()"
-        routerLink="/composicion"
-        routerLinkActive="active"
-        class="nav-item"
-      >
+      <a *ngIf="esAdminOEntrenador()" routerLink="/composicion" routerLinkActive="active" class="nav-item" (click)="closeSidebar()">
         <span class="nav-icon">&#9878;</span> Composicion Corporal
       </a>
-      <a
-        *ngIf="esAdminOEntrenador()"
-        routerLink="/nutricion"
-        routerLinkActive="active"
-        class="nav-item"
-      >
+      <a *ngIf="esAdminOEntrenador()" routerLink="/nutricion" routerLinkActive="active" class="nav-item" (click)="closeSidebar()">
         <span class="nav-icon">&#127869;</span> Nutricion
       </a>
-      <a
-        *ngIf="esAdminOEntrenador()"
-        routerLink="/progreso"
-        routerLinkActive="active"
-        class="nav-item"
-      >
+      <a *ngIf="esAdminOEntrenador()" routerLink="/progreso" routerLinkActive="active" class="nav-item" (click)="closeSidebar()">
         <span class="nav-icon">&#128200;</span> Progreso
       </a>
-      <a
-        *ngIf="esStaff()"
-        routerLink="/asistencia"
-        routerLinkActive="active"
-        class="nav-item"
-      >
+      <a *ngIf="esStaff()" routerLink="/asistencia" routerLinkActive="active" class="nav-item" (click)="closeSidebar()">
         <span class="nav-icon">&#128198;</span> Asistencia
       </a>
     </nav>
@@ -56,8 +37,12 @@
       <button class="ug-btn-ghost ug-btn-sm" (click)="logout()">Salir</button>
     </div>
   </aside>
+
   <div class="main-area">
     <header class="topbar">
+      <button class="hamburger" (click)="toggleSidebar()" aria-label="Menú">
+        <span></span><span></span><span></span>
+      </button>
       <h1 class="ug-display page-title">{{ pageTitle() }}</h1>
     </header>
     <main class="content">

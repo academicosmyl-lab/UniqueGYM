@@ -228,7 +228,14 @@
 }
 
 @media (max-width: 600px) {
-  .accesos-grid { grid-template-columns: 1fr; }
+  .accesos-grid { grid-template-columns: repeat(2, 1fr); }
+  .page-header h1 { font-size: 24px; }
+  .kpi-valor { font-size: 28px; }
+  .seccion-card { padding: var(--ug-lg); }
+  .tabla-card table { min-width: 480px; }
+}
 
-  .page-header h1 { font-size: 28px; }
+@media (max-width: 400px) {
+  .accesos-grid { grid-template-columns: 1fr; }
+  .acceso-icono { font-size: 24px; }
 }

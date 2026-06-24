@@ -27,6 +27,16 @@ export class LayoutComponent {
     this.userRole() === 'RECEPCION'
   );
 
+  sidebarOpen = signal(false);
+
+  toggleSidebar(): void {
+    this.sidebarOpen.update(v => !v);
+  }
+
+  closeSidebar(): void {
+    this.sidebarOpen.set(false);
+  }
+
   logout(): void {
     this.auth.logout();
   }

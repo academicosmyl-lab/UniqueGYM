@@ -1,5 +1,21 @@
 .shell { display: flex; height: 100vh; overflow: hidden; }
 
+/* ── Overlay móvil ── */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 99;
+  opacity: 0;
+  transition: opacity 0.25s;
+
+  &.visible {
+    opacity: 1;
+  }
+}
+
+/* ── Sidebar ── */
 .sidebar {
   width: var(--sidebar-w);
   background: var(--ug-superficie);
@@ -7,6 +23,8 @@
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
+  transition: transform 0.25s ease;
+  z-index: 100;
 }
 
 .sidebar-logo {
@@ -57,24 +75,85 @@
   justify-content: space-between;
 }
 
+/* ── Main area ── */
 .main-area {
   flex: 1;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-width: 0;
 }
 
 .topbar {
   padding: var(--ug-lg) var(--ug-2xl);
   border-bottom: 1px solid var(--ug-linea);
   background: var(--ug-superficie);
+  display: flex;
+  align-items: center;
+  gap: var(--ug-md);
 }
 
-.page-title { font-size: 20px; color: var(--ug-texto); }
+.page-title { font-size: 20px; color: var(--ug-texto); flex: 1; }
 
 .content {
   flex: 1;
   overflow-y: auto;
   padding: var(--ug-2xl);
   background: var(--ug-negro);
+}
+
+/* ── Hamburguesa (solo visible en móvil) ── */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  flex-shrink: 0;
+
+  span {
+    display: block;
+    height: 2px;
+    background: var(--ug-texto);
+    border-radius: 2px;
+    transition: all 0.2s;
+  }
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .sidebar-overlay { display: block; }
+
+  .hamburger { display: flex; }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    transform: translateX(-100%);
+
+    &.open {
+      transform: translateX(0);
+    }
+  }
+
+  .topbar {
+    padding: var(--ug-md) var(--ug-lg);
+  }
+
+  .content {
+    padding: var(--ug-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  .content {
+    padding: var(--ug-md);
+  }
 }
