@@ -87,6 +87,7 @@ export class EjerciciosComponent implements OnInit {
     nombre: '',
     descripcion: '',
     instrucciones: '',
+    gif_url: '',
     video_url: '',
     thumbnail_url: '',
     equipment_id: '',
