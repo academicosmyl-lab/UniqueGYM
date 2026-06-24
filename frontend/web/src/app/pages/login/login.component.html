@@ -13,6 +13,11 @@
     <div class="slide-overlay"></div>
   </div>
 
+  <!-- Logo esquina inferior izquierda -->
+  <div class="corner-logo" [class.hidden]="showForm()">
+    <img src="/logo.jpg" alt="Unique Gym" class="corner-logo-img" />
+  </div>
+
   <!-- Instagram top-right -->
   <a [href]="INSTAGRAM" target="_blank" rel="noopener" class="ig-fab" [class.hidden]="showForm()">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -524,6 +529,40 @@
 }
 
 .btn-submit:disabled { opacity: 0.55; cursor: not-allowed; }
+
+/* ══ Logo esquina ══ */
+.corner-logo {
+  position: absolute;
+  bottom: 28px;
+  left: 28px;
+  z-index: 20;
+  animation: logo-aparecer 1.8s ease forwards;
+  transition: opacity 0.4s ease;
+}
+
+.corner-logo.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.corner-logo-img {
+  width: 110px;
+  height: 110px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid rgba(29,222,16,0.35);
+  box-shadow:
+    0 0 24px rgba(29,222,16,0.25),
+    0 0 60px rgba(29,222,16,0.1),
+    0 8px 24px rgba(0,0,0,0.5);
+  filter: drop-shadow(0 0 12px rgba(29,222,16,0.3));
+}
+
+@keyframes logo-aparecer {
+  0%   { opacity: 0; transform: translateY(20px) scale(0.85); }
+  60%  { opacity: 1; transform: translateY(-4px) scale(1.03); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
 
 /* ══ Instagram flotante top-right ══ */
 .ig-fab {
